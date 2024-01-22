@@ -2,6 +2,8 @@ package io.samancore.template_ops.service.impl;
 
 import io.samancore.template_ops.client.GithubApi;
 import io.samancore.template_ops.model.Author;
+import io.samancore.template_ops.model.ConditionType;
+import io.samancore.template_ops.model.ConditionsProperty;
 import io.samancore.template_ops.model.Node;
 import io.samancore.template_ops.model.github.CommitRequest;
 import io.samancore.template_ops.service.GitService;
@@ -117,5 +119,25 @@ public class GithubService implements GitService {
                 .setId(newSha)
                 .setName(FORM_FILE)
                 .build();
+    }
+
+    @Override
+    public ConditionsProperty getConditionsProperty(String product, String template, String property, String token) {
+        return null;
+    }
+
+    @Override
+    public List<ConditionsProperty> getConditionsTemplate(String product, String template, String token) {
+        return null;
+    }
+
+    @Override
+    public Node getConditionProperty(String product, String template, String property, ConditionType type, String token) {
+        return null;
+    }
+
+    @Override
+    public Node persistConditionProperty(String product, String template, String property, ConditionType type, Node node, String token) {
+        return null;
     }
 }
