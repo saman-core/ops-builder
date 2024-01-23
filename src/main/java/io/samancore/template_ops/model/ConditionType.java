@@ -17,4 +17,13 @@ public enum ConditionType {
         this.value = value;
         this.suffix = suffix;
     }
+
+    public static ConditionType bySuffix(String suffix){
+        for(ConditionType c : values()){
+            if( c.getSuffix().equals(suffix)){
+                return c;
+            }
+        }
+        return null;
+    }
 }
