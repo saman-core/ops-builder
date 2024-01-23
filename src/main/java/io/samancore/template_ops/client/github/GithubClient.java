@@ -32,7 +32,7 @@ public class GithubClient implements GitClient {
     public List<Node> listDirectories(String directory, String token) {
         var responseApi = api.listDirectory(gitOwner, gitRepo, directory, token);
         return responseApi.stream()
-                .filter(map -> DIR_TYPE.equals(map.get(TYPE)))
+                .filter(this::isNotHiddenDirectory)
                 .map(map -> {
                     var sha = String.valueOf(map.get(SHA));
                     var name = String.valueOf(map.get(NAME));
@@ -108,6 +108,10 @@ public class GithubClient implements GitClient {
                     mapConditionsProperty.put(conditionType, node);
                 });
         return mapConditions;
+    }
+
+    protected boolean isNotHiddenDirectory(Map<String, Object> map) {
+        return DIR_TYPE.equals(map.get(TYPE)) && String.valueOf(map.get(NAME)).startsWith(DOT);
     }
 
     protected boolean isDmnFileProperty(Map<String, Object> map) {
