@@ -1,12 +1,11 @@
-package io.samancore.template_ops.service.impl;
+package io.samancore.template_ops.client.github;
 
-import io.samancore.template_ops.client.GithubApi;
+import io.samancore.template_ops.client.GitClient;
 import io.samancore.template_ops.model.Author;
 import io.samancore.template_ops.model.ConditionType;
 import io.samancore.template_ops.model.ConditionsProperty;
 import io.samancore.template_ops.model.Node;
 import io.samancore.template_ops.model.github.CommitRequest;
-import io.samancore.template_ops.service.GitService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -15,22 +14,10 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.util.*;
 
+import static io.samancore.template_ops.GitConstants.*;
+
 @ApplicationScoped
-public class GithubService implements GitService {
-    private static final String FORM_FILE = "form.json";
-    private static final String INFO_FILE = "README.md";
-    private static final String DIR_TYPE = "dir";
-    private static final String FILE_TYPE = "file";
-    private static final String EMPTY = "";
-    private static final String SLASH = "/";
-    private static final String TEMPLATES = "templates";
-    private static final String DEFAULT_BRANCH = "main";
-    private static final String SHA = "sha";
-    private static final String NAME = "name";
-    private static final String CONTENT = "content";
-    private static final String TYPE = "type";
-    private static final String CONDITIONS = "conditions";
-    private static final String UNDERSCORE = "_";
+public class GithubClient implements GitClient {
 
     @Inject
     @RestClient
@@ -42,9 +29,8 @@ public class GithubService implements GitService {
     @ConfigProperty(name = "git.owner")
     String gitOwner;
 
-    @Override
-    public List<Node> listProducts(String token) {
-        var responseApi = api.listDirectory(gitOwner, gitRepo, EMPTY, token);
+    public List<Node> listDirectories(String directory, String token) {
+        var responseApi = api.listDirectory(gitOwner, gitRepo, directory, token);
         return responseApi.stream()
                 .filter(map -> DIR_TYPE.equals(map.get(TYPE)))
                 .map(map -> {
@@ -58,9 +44,7 @@ public class GithubService implements GitService {
                 .toList();
     }
 
-    @Override
-    public Node getProduct(String product, String token) {
-        var file = product.concat(SLASH).concat(INFO_FILE);
+    public Node getFile(String file, String token) {
         var responseApi = api.getContent(gitOwner, gitRepo, file, token);
         var sha = String.valueOf(responseApi.get(SHA));
         var name = String.valueOf(responseApi.get(NAME));
@@ -72,39 +56,7 @@ public class GithubService implements GitService {
                 .build();
     }
 
-    @Override
-    public List<Node> listTemplates(String product, String token) {
-        var path = product.concat(SLASH).concat(TEMPLATES);
-        var responseApi = api.listDirectory(gitOwner, gitRepo, path, token);
-        return responseApi.stream()
-                .filter(map -> DIR_TYPE.equals(map.get(TYPE)))
-                .map(map -> {
-                    var sha = String.valueOf(map.get(SHA));
-                    var name = String.valueOf(map.get(NAME));
-                    return Node.newBuilder()
-                            .setId(sha)
-                            .setName(name)
-                            .build();
-                })
-                .toList();
-    }
-
-    @Override
-    public Node getTemplateJson(String product, String template, String token) {
-        var file = product.concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(FORM_FILE);
-        var responseApi = api.getContent(gitOwner, gitRepo, file, token);
-        var sha = String.valueOf(responseApi.get(SHA));
-        var name = String.valueOf(responseApi.get(NAME));
-        var content = String.valueOf(responseApi.get(CONTENT));
-        return Node.newBuilder()
-                .setId(sha)
-                .setName(name)
-                .setContent(content)
-                .build();
-    }
-
-    @Override
-    public Node persistTemplate(String product, String template, String message, String content, String sha, Author author, String token) {
+    public Node persistFile(String file, String message, String content, String sha, Author author, String token) {
         var data = CommitRequest.newBuilder()
                 .setMessage(message)
                 .setSha(sha)
@@ -113,7 +65,6 @@ public class GithubService implements GitService {
                 .setBranch(DEFAULT_BRANCH)
                 .build();
 
-        var file = product.concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(FORM_FILE);
         var responseApi = api.setContent(gitOwner, gitRepo, file, token, data);
         var responseContent = (Map<String, Objects>) responseApi.get(CONTENT);
         var newSha = String.valueOf(responseContent.get(SHA));
@@ -123,16 +74,8 @@ public class GithubService implements GitService {
                 .build();
     }
 
-    @Override
-    public ConditionsProperty getConditionsProperty(String product, String template, String property, String token) {
-        return null;
-    }
-
-    @Override
-    public List<ConditionsProperty> getConditionsTemplate(String product, String template, String token) {
+    public Map<String, ConditionsProperty> getMapConditionsTemplate(String path, String token) {
         Map<String, ConditionsProperty> mapConditions = new HashMap<>();
-
-        var path = product.concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(CONDITIONS);
         var responseApi = api.listDirectory(gitOwner, gitRepo, path, token);
         responseApi.stream()
                 .filter(this::isDmnFileProperty)
@@ -164,21 +107,11 @@ public class GithubService implements GitService {
                     var mapConditionsProperty = mapConditions.get(propertyName).getConditions();
                     mapConditionsProperty.put(conditionType, node);
                 });
-        return List.copyOf(mapConditions.values());
-    }
-
-    @Override
-    public Node getConditionProperty(String product, String template, String property, ConditionType type, String token) {
-        return null;
-    }
-
-    @Override
-    public Node persistConditionProperty(String product, String template, String property, ConditionType type, Node node, String token) {
-        return null;
+        return mapConditions;
     }
 
     protected boolean isDmnFileProperty(Map<String, Object> map) {
         var name = String.valueOf(map.get(NAME)).toLowerCase(Locale.ROOT);
-        return FILE_TYPE.equals(map.get(TYPE)) && name.endsWith(".dmn") && name.contains(UNDERSCORE);
+        return FILE_TYPE.equals(map.get(TYPE)) && name.endsWith(DMN_EXTENSION) && name.contains(UNDERSCORE);
     }
 }

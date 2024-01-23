@@ -25,5 +25,5 @@ public interface GitService {
 
     Node getConditionProperty(String product, String template, String property, ConditionType type, String token);
 
-    Node persistConditionProperty(String product, String template, String property, ConditionType type, Node node, String token);
+    Node persistConditionProperty(String product, String template, String property, ConditionType type, String message, String content, String sha, Author author, String token);
 }

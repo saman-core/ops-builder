@@ -1,4 +1,4 @@
-package io.samancore.template_ops.client;
+package io.samancore.template_ops.client.github;
 
 import io.quarkus.rest.client.reactive.NotBody;
 import io.samancore.template_ops.model.github.CommitRequest;
