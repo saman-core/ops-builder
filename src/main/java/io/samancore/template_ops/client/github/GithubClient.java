@@ -95,7 +95,7 @@ public class GithubClient implements GitClient {
                     if (mapConditions.get(propertyName) == null) {
                         var cp = ConditionsProperty.newBuilder()
                                 .setProperty(propertyName)
-                                .setConditions(new HashMap<>())
+                                .setConditions(new EnumMap<>(ConditionType.class))
                                 .build();
                         mapConditions.put(propertyName, cp);
                     }
