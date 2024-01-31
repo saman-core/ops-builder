@@ -111,7 +111,7 @@ public class GithubClient implements GitClient {
     }
 
     protected boolean isNotHiddenDirectory(Map<String, Object> map) {
-        return DIR_TYPE.equals(map.get(TYPE)) && String.valueOf(map.get(NAME)).startsWith(DOT);
+        return DIR_TYPE.equals(map.get(TYPE)) && !String.valueOf(map.get(NAME)).startsWith(DOT);
     }
 
     protected boolean isDmnFileProperty(Map<String, Object> map) {

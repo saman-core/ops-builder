@@ -1,9 +1,11 @@
 package io.samancore.template_ops.api;
 
+import io.quarkus.security.Authenticated;
 import io.samancore.template_ops.model.Author;
 import io.samancore.template_ops.model.ConditionsProperty;
 import io.samancore.template_ops.model.Node;
 import io.samancore.template_ops.service.GitService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -29,12 +31,14 @@ public class TemplateOpsApi {
 
     @GET
     @Path("")
+    @Authenticated
     public List<Node> products() {
         return service.listProducts(userToken);
     }
 
     @GET
     @Path("/{product}")
+    @RolesAllowed({"group-admin"})
     public Node product(@PathParam("product") String product) {
         return service.getProduct(product, userToken);
     }
