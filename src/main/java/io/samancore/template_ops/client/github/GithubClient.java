@@ -5,7 +5,7 @@ import io.samancore.template_ops.model.Author;
 import io.samancore.template_ops.model.ConditionType;
 import io.samancore.template_ops.model.ConditionsProperty;
 import io.samancore.template_ops.model.Node;
-import io.samancore.template_ops.model.github.CommitRequest;
+import io.samancore.template_ops.model.github.GitHubCommitRequest;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +57,7 @@ public class GithubClient implements GitClient {
     }
 
     public Node persistFile(String file, String message, String content, String sha, Author author, String token) {
-        var data = CommitRequest.newBuilder()
+        var data = GitHubCommitRequest.newBuilder()
                 .setMessage(message)
                 .setSha(sha)
                 .setCommitter(author)

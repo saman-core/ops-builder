@@ -1,6 +1,5 @@
-package io.samancore.template_ops.model.github;
+package io.samancore.template_ops.model;
 
-import io.samancore.template_ops.model.Author;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -14,8 +13,5 @@ import lombok.extern.jackson.Jacksonized;
 )
 public class CommitRequest {
     String message;
-    String content;
-    String sha;
-    String branch;
-    Author committer;
+    Node data;
 }

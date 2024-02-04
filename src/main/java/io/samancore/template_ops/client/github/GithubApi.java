@@ -1,7 +1,7 @@
 package io.samancore.template_ops.client.github;
 
 import io.quarkus.rest.client.reactive.NotBody;
-import io.samancore.template_ops.model.github.CommitRequest;
+import io.samancore.template_ops.model.github.GitHubCommitRequest;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -35,7 +35,7 @@ public interface GithubApi {
                                    @PathParam("gitRepo") String gitRepo,
                                    @PathParam("file") String file,
                                    @NotBody String token,
-                                   CommitRequest data
+                                   GitHubCommitRequest data
     );
 
     @GET
