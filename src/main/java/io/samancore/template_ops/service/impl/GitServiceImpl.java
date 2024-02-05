@@ -1,10 +1,7 @@
 package io.samancore.template_ops.service.impl;
 
 import io.samancore.template_ops.client.GitClient;
-import io.samancore.template_ops.model.Author;
-import io.samancore.template_ops.model.ConditionType;
-import io.samancore.template_ops.model.ConditionsProperty;
-import io.samancore.template_ops.model.Node;
+import io.samancore.template_ops.model.*;
 import io.samancore.template_ops.service.GitService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -43,8 +40,12 @@ public class GitServiceImpl implements GitService {
     }
 
     @Override
-    public Node persistTemplate(String product, String template, String message, String content, String sha, Author author, String token) {
+    public Node persistTemplate(String product, String template, CommitRequest commitRequest, Author author, String token) {
         var file = product.concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(FORM_FILE);
+
+        var message = commitRequest.getMessage();
+        var content = commitRequest.getData().getContent();
+        var sha = commitRequest.getData().getId();
         return client.persistFile(file, message, content, sha, author, token);
     }
 
@@ -70,9 +71,13 @@ public class GitServiceImpl implements GitService {
     }
 
     @Override
-    public Node persistConditionProperty(String product, String template, String property, ConditionType type, String message, String content, String sha, Author author, String token) {
+    public Node persistConditionProperty(String product, String template, String property, ConditionType type, CommitRequest commitRequest, Author author, String token) {
         var conditionName = property.concat(type.getSuffix()).concat(DMN_EXTENSION);
         var file = product.concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(CONDITIONS).concat(SLASH).concat(conditionName);
+
+        var message = commitRequest.getMessage();
+        var content = commitRequest.getData().getContent();
+        var sha = commitRequest.getData().getId();
         return client.persistFile(file, message, content, sha, author, token);
     }
 }

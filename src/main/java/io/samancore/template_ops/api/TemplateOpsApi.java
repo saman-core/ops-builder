@@ -1,10 +1,7 @@
 package io.samancore.template_ops.api;
 
 import io.quarkus.oidc.UserInfo;
-import io.samancore.template_ops.model.Author;
-import io.samancore.template_ops.model.CommitRequest;
-import io.samancore.template_ops.model.ConditionsProperty;
-import io.samancore.template_ops.model.Node;
+import io.samancore.template_ops.model.*;
 import io.samancore.template_ops.service.GitService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -68,14 +65,19 @@ public class TemplateOpsApi {
         var name = userInfo.getString(claimName);
         var email = userInfo.getEmail();
 
-        var message = commitRequest.getMessage();
-        var content = commitRequest.getData().getContent();
-        var sha = commitRequest.getData().getId();
         var committer = Author.newBuilder()
                 .setName(name)
                 .setEmail(email)
                 .build();
-        return service.persistTemplate(product, template, message, content, sha, committer, token);
+        return service.persistTemplate(product, template, commitRequest, committer, token);
+    }
+
+    @GET
+    @Path("/{product}/templates/{template}/conditions/{property}")
+    @RolesAllowed({"admin"})
+    public ConditionsProperty getConditionsProperty(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property) {
+        var token = userInfo.getString(claimToken);
+        return service.getConditionsProperty(product, template, property, token);
     }
 
     @GET
@@ -84,5 +86,28 @@ public class TemplateOpsApi {
     public List<ConditionsProperty> listConditions(@PathParam("product") String product, @PathParam("template") String template) {
         var token = userInfo.getString(claimToken);
         return service.getConditionsTemplate(product, template, token);
+    }
+
+    @GET
+    @Path("/{product}/templates/{template}/conditions/{property}/{type}")
+    @RolesAllowed({"admin"})
+    public Node getConditionProperty(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property, @PathParam("type") ConditionType type) {
+        var token = userInfo.getString(claimToken);
+        return service.getConditionProperty(product, template, property, type, token);
+    }
+
+    @POST
+    @Path("/{product}/templates/{template}/conditions/{property}/{type}")
+    @RolesAllowed({"admin"})
+    public Node persistConditionProperty(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property, @PathParam("type") ConditionType type, CommitRequest commitRequest) {
+        var token = userInfo.getString(claimToken);
+        var name = userInfo.getString(claimName);
+        var email = userInfo.getEmail();
+
+        var committer = Author.newBuilder()
+                .setName(name)
+                .setEmail(email)
+                .build();
+        return service.persistConditionProperty(product, template, property, type, commitRequest, committer, token);
     }
 }
