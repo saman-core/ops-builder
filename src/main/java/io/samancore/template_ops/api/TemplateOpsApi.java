@@ -11,7 +11,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.List;
 
-@Path("/products")
+@Path("/products/")
 @Produces(MediaType.APPLICATION_JSON)
 public class TemplateOpsApi {
     @ConfigProperty(name = "oidc.claim.name")
@@ -26,39 +26,39 @@ public class TemplateOpsApi {
     UserInfo userInfo;
 
     @GET
-    @Path("/")
+    @Path("")
     @RolesAllowed({"admin"})
-    public List<Node> products() {
+    public List<Node> getAllProducts() {
         var token = userInfo.getString(claimToken);
         return service.listProducts(token);
     }
 
     @GET
-    @Path("/{product}")
+    @Path("{product}")
     @RolesAllowed({"admin"})
-    public Node product(@PathParam("product") String product) {
+    public Node getProduct(@PathParam("product") String product) {
         var token = userInfo.getString(claimToken);
         return service.getProduct(product, token);
     }
 
     @GET
-    @Path("/{product}/templates/")
+    @Path("{product}/templates/")
     @RolesAllowed({"admin"})
-    public List<Node> templates(@PathParam("product") String product) {
+    public List<Node> getAllTemplatesByProduct(@PathParam("product") String product) {
         var token = userInfo.getString(claimToken);
         return service.listTemplates(product, token);
     }
 
     @GET
-    @Path("/{product}/templates/{template}")
+    @Path("{product}/templates/{template}")
     @RolesAllowed({"admin"})
-    public Node template(@PathParam("product") String product, @PathParam("template") String template) {
+    public Node getTemplate(@PathParam("product") String product, @PathParam("template") String template) {
         var token = userInfo.getString(claimToken);
         return service.getTemplateJson(product, template, token);
     }
 
     @POST
-    @Path("/{product}/templates/{template}")
+    @Path("{product}/templates/{template}")
     @RolesAllowed({"admin"})
     public Node persistTemplate(@PathParam("product") String product, @PathParam("template") String template, CommitRequest commitRequest) {
         var token = userInfo.getString(claimToken);
@@ -73,7 +73,7 @@ public class TemplateOpsApi {
     }
 
     @GET
-    @Path("/{product}/templates/{template}/conditions/{property}")
+    @Path("{product}/templates/{template}/conditions/{property}")
     @RolesAllowed({"admin"})
     public ConditionsProperty getConditionsProperty(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property) {
         var token = userInfo.getString(claimToken);
@@ -81,25 +81,25 @@ public class TemplateOpsApi {
     }
 
     @GET
-    @Path("/{product}/templates/{template}/conditions/")
+    @Path("{product}/templates/{template}/conditions/")
     @RolesAllowed({"admin"})
-    public List<ConditionsProperty> listConditions(@PathParam("product") String product, @PathParam("template") String template) {
+    public List<ConditionsProperty> getAllConditionsPropertiesByTemplate(@PathParam("product") String product, @PathParam("template") String template) {
         var token = userInfo.getString(claimToken);
         return service.getConditionsTemplate(product, template, token);
     }
 
     @GET
-    @Path("/{product}/templates/{template}/conditions/{property}/{type}")
+    @Path("{product}/templates/{template}/conditions/{property}/{type}")
     @RolesAllowed({"admin"})
-    public Node getConditionProperty(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property, @PathParam("type") ConditionType type) {
+    public Node getCondition(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property, @PathParam("type") ConditionType type) {
         var token = userInfo.getString(claimToken);
         return service.getConditionProperty(product, template, property, type, token);
     }
 
     @POST
-    @Path("/{product}/templates/{template}/conditions/{property}/{type}")
+    @Path("{product}/templates/{template}/conditions/{property}/{type}")
     @RolesAllowed({"admin"})
-    public Node persistConditionProperty(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property, @PathParam("type") ConditionType type, CommitRequest commitRequest) {
+    public Node persistCondition(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property, @PathParam("type") ConditionType type, CommitRequest commitRequest) {
         var token = userInfo.getString(claimToken);
         var name = userInfo.getString(claimName);
         var email = userInfo.getEmail();
