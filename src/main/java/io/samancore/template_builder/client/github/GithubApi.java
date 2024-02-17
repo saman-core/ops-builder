@@ -1,7 +1,7 @@
-package io.samancore.template_ops.client.github;
+package io.samancore.template_builder.client.github;
 
 import io.quarkus.rest.client.reactive.NotBody;
-import io.samancore.template_ops.model.github.GitHubCommitRequest;
+import io.samancore.template_builder.model.github.GitHubCommitRequest;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;

@@ -1,4 +1,4 @@
-package io.samancore.template_ops;
+package io.samancore.template_builder;
 
 public class GitConstants {
     public static final String FORM_FILE = "form.json";

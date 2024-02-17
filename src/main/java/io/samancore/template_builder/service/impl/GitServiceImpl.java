@@ -1,14 +1,14 @@
-package io.samancore.template_ops.service.impl;
+package io.samancore.template_builder.service.impl;
 
-import io.samancore.template_ops.client.GitClient;
-import io.samancore.template_ops.model.*;
-import io.samancore.template_ops.service.GitService;
+import io.samancore.template_builder.client.GitClient;
+import io.samancore.template_builder.model.*;
+import io.samancore.template_builder.service.GitService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.util.List;
 
-import static io.samancore.template_ops.GitConstants.*;
+import static io.samancore.template_builder.GitConstants.*;
 
 @ApplicationScoped
 public class GitServiceImpl implements GitService {

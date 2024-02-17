@@ -1,8 +1,8 @@
-package io.samancore.template_ops.api;
+package io.samancore.template_builder.api;
 
 import io.quarkus.oidc.UserInfo;
-import io.samancore.template_ops.model.*;
-import io.samancore.template_ops.service.GitService;
+import io.samancore.template_builder.model.*;
+import io.samancore.template_builder.service.GitService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @Path("/products/")
 @Produces(MediaType.APPLICATION_JSON)
-public class TemplateOpsApi {
+public class ResourceApi {
     @ConfigProperty(name = "oidc.claim.name")
     String claimName;
     @ConfigProperty(name = "oidc.claim.token")

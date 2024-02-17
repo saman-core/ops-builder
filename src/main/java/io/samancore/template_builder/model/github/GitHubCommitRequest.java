@@ -1,5 +1,6 @@
-package io.samancore.template_ops.model;
+package io.samancore.template_builder.model.github;
 
+import io.samancore.template_builder.model.Author;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -11,8 +12,10 @@ import lombok.extern.jackson.Jacksonized;
         builderMethodName = "newBuilder",
         toBuilder = true
 )
-public class Node {
-    String id;
-    String name;
+public class GitHubCommitRequest {
+    String message;
     String content;
+    String sha;
+    String branch;
+    Author committer;
 }

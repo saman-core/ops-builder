@@ -1,4 +1,4 @@
-package io.samancore.template_ops.model;
+package io.samancore.template_builder.model;
 
 import lombok.Getter;
 

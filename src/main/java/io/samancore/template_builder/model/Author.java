@@ -1,4 +1,4 @@
-package io.samancore.template_ops.model;
+package io.samancore.template_builder.model;
 
 import lombok.Builder;
 import lombok.Value;
@@ -11,7 +11,7 @@ import lombok.extern.jackson.Jacksonized;
         builderMethodName = "newBuilder",
         toBuilder = true
 )
-public class CommitRequest {
-    String message;
-    Node data;
+public class Author {
+    String name;
+    String email;
 }

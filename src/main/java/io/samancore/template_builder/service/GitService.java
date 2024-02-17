@@ -1,6 +1,6 @@
-package io.samancore.template_ops.service;
+package io.samancore.template_builder.service;
 
-import io.samancore.template_ops.model.*;
+import io.samancore.template_builder.model.*;
 
 import java.util.List;
 

@@ -1,11 +1,11 @@
-package io.samancore.template_ops.client.github;
+package io.samancore.template_builder.client.github;
 
-import io.samancore.template_ops.client.GitClient;
-import io.samancore.template_ops.model.Author;
-import io.samancore.template_ops.model.ConditionType;
-import io.samancore.template_ops.model.ConditionsProperty;
-import io.samancore.template_ops.model.Node;
-import io.samancore.template_ops.model.github.GitHubCommitRequest;
+import io.samancore.template_builder.client.GitClient;
+import io.samancore.template_builder.model.Author;
+import io.samancore.template_builder.model.ConditionType;
+import io.samancore.template_builder.model.ConditionsProperty;
+import io.samancore.template_builder.model.Node;
+import io.samancore.template_builder.model.github.GitHubCommitRequest;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -14,7 +14,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.util.*;
 
-import static io.samancore.template_ops.GitConstants.*;
+import static io.samancore.template_builder.GitConstants.*;
 
 @ApplicationScoped
 public class GithubClient implements GitClient {

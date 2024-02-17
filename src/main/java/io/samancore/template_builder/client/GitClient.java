@@ -1,8 +1,8 @@
-package io.samancore.template_ops.client;
+package io.samancore.template_builder.client;
 
-import io.samancore.template_ops.model.Author;
-import io.samancore.template_ops.model.ConditionsProperty;
-import io.samancore.template_ops.model.Node;
+import io.samancore.template_builder.model.Author;
+import io.samancore.template_builder.model.ConditionsProperty;
+import io.samancore.template_builder.model.Node;
 
 import java.util.List;
 import java.util.Map;
