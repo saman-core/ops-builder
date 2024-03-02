@@ -15,5 +15,7 @@ public interface GitClient {
 
     Node persistFile(String file, String message, String content, String sha, Author author, String token);
 
+    Node deleteFile(String file, String message, String sha, Author author, String token);
+
     Map<String, ConditionsProperty> getMapConditionsTemplate(String path, String token);
 }

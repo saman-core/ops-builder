@@ -12,6 +12,7 @@ public class GitConstants {
     public static final String SHA = "sha";
     public static final String NAME = "name";
     public static final String CONTENT = "content";
+    public static final String COMMIT = "commit";
     public static final String TYPE = "type";
     public static final String CONDITIONS = "conditions";
     public static final String UNDERSCORE = "_";

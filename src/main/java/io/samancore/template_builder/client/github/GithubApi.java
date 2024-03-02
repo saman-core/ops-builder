@@ -38,6 +38,16 @@ public interface GithubApi {
                                    GitHubCommitRequest data
     );
 
+    @DELETE
+    @Path("/{gitOwner}/{gitRepo}/contents/{file}")
+    @ClientHeaderParam(name = "Authorization", value = "Bearer {token}")
+    Map<String, Object> deleteContent(@PathParam("gitOwner") String gitOwner,
+                                   @PathParam("gitRepo") String gitRepo,
+                                   @PathParam("file") String file,
+                                   @NotBody String token,
+                                   GitHubCommitRequest data
+    );
+
     @GET
     @Path("/{gitOwner}/{gitRepo}/contents/{path}")
     @ClientHeaderParam(name = "Authorization", value = "Bearer {token}")

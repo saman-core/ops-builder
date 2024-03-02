@@ -74,6 +74,22 @@ public class GithubClient implements GitClient {
                 .build();
     }
 
+    public Node deleteFile(String file, String message, String sha, Author author, String token) {
+        var data = GitHubCommitRequest.newBuilder()
+                .setMessage(message)
+                .setSha(sha)
+                .setCommitter(author)
+                .setBranch(DEFAULT_BRANCH)
+                .build();
+
+        var responseApi = api.deleteContent(gitOwner, gitRepo, file, token, data);
+        var responseContent = (Map<String, Objects>) responseApi.get(COMMIT);
+        var newSha = String.valueOf(responseContent.get(SHA));
+        return Node.newBuilder()
+                .setId(newSha)
+                .build();
+    }
+
     public Map<String, ConditionsProperty> getMapConditionsTemplate(String path, String token) {
         Map<String, ConditionsProperty> mapConditions = new HashMap<>();
         var responseApi = api.listDirectory(gitOwner, gitRepo, path, token);

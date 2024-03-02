@@ -110,4 +110,19 @@ public class ResourceApi {
                 .build();
         return service.persistConditionProperty(product, template, property, type, commitRequest, committer, token);
     }
+
+    @DELETE
+    @Path("{product}/templates/{template}/conditions/{property}/{type}")
+    @RolesAllowed({"admin"})
+    public Node deleteCondition(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property, @PathParam("type") ConditionType type, CommitRequest commitRequest) {
+        var token = userInfo.getString(claimToken);
+        var name = userInfo.getString(claimName);
+        var email = userInfo.getEmail();
+
+        var committer = Author.newBuilder()
+                .setName(name)
+                .setEmail(email)
+                .build();
+        return service.deleteConditionProperty(product, template, property, type, commitRequest, committer, token);
+    }
 }

@@ -80,4 +80,14 @@ public class GitServiceImpl implements GitService {
         var sha = commitRequest.getData().getId();
         return client.persistFile(file, message, content, sha, author, token);
     }
+
+    @Override
+    public Node deleteConditionProperty(String product, String template, String property, ConditionType type, CommitRequest commitRequest, Author author, String token) {
+        var conditionName = property.concat(type.getSuffix()).concat(DMN_EXTENSION);
+        var file = product.concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(CONDITIONS).concat(SLASH).concat(conditionName);
+
+        var message = commitRequest.getMessage();
+        var sha = commitRequest.getData().getId();
+        return client.deleteFile(file, message, sha, author, token);
+    }
 }

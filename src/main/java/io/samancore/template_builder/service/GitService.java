@@ -23,4 +23,6 @@ public interface GitService {
     Node getConditionProperty(String product, String template, String property, ConditionType type, String token);
 
     Node persistConditionProperty(String product, String template, String property, ConditionType type, CommitRequest commitRequest, Author author, String token);
+
+    Node deleteConditionProperty(String product, String template, String property, ConditionType type, CommitRequest commitRequest, Author author, String token);
 }
