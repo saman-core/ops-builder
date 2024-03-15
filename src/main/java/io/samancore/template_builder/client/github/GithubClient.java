@@ -97,7 +97,7 @@ public class GithubClient implements GitClient {
                 .filter(this::isDmnFileProperty)
                 .forEach(map -> {
                     var sha = String.valueOf(map.get(SHA));
-                    var fullName = String.valueOf(map.get(NAME)).toLowerCase(Locale.ROOT);
+                    var fullName = String.valueOf(map.get(NAME));
 
                     var split = fullName.split(UNDERSCORE);
                     var propertyName = StringUtils.join(split, UNDERSCORE, 0, split.length - 1);
@@ -131,7 +131,7 @@ public class GithubClient implements GitClient {
     }
 
     protected boolean isDmnFileProperty(Map<String, Object> map) {
-        var name = String.valueOf(map.get(NAME)).toLowerCase(Locale.ROOT);
+        var name = String.valueOf(map.get(NAME));
         return FILE_TYPE.equals(map.get(TYPE)) && name.endsWith(DMN_EXTENSION) && name.contains(UNDERSCORE);
     }
 }
