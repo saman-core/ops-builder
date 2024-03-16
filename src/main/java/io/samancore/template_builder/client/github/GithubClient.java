@@ -8,9 +8,11 @@ import io.samancore.template_builder.model.Node;
 import io.samancore.template_builder.model.github.GitHubCommitRequest;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.WebApplicationException;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.logging.Logger;
 
 import java.util.*;
 
@@ -18,6 +20,7 @@ import static io.samancore.template_builder.GitConstants.*;
 
 @ApplicationScoped
 public class GithubClient implements GitClient {
+    private static final Logger log = Logger.getLogger(GithubClient.class);
 
     @Inject
     @RestClient
@@ -30,7 +33,12 @@ public class GithubClient implements GitClient {
     String gitOwner;
 
     public List<Node> listDirectories(String directory, String token) {
-        var responseApi = api.listDirectory(gitOwner, gitRepo, directory, token);
+        List<Map<String, Object>> responseApi = new ArrayList<>();
+        try {
+            responseApi = api.listDirectory(gitOwner, gitRepo, directory, token);
+        } catch (WebApplicationException e) {
+            log.warnf(e, "WebApplicationException in PATH: %s", directory);
+        }
         return responseApi.stream()
                 .filter(this::isNotHiddenDirectory)
                 .map(map -> {
@@ -92,7 +100,12 @@ public class GithubClient implements GitClient {
 
     public Map<String, ConditionsProperty> getMapConditionsTemplate(String path, String token) {
         Map<String, ConditionsProperty> mapConditions = new HashMap<>();
-        var responseApi = api.listDirectory(gitOwner, gitRepo, path, token);
+        List<Map<String, Object>> responseApi = new ArrayList<>();
+        try {
+            responseApi = api.listDirectory(gitOwner, gitRepo, path, token);
+        } catch (WebApplicationException e) {
+            log.warnf(e, "WebApplicationException in PATH: %s", path);
+        }
         responseApi.stream()
                 .filter(this::isDmnFileProperty)
                 .forEach(map -> {
