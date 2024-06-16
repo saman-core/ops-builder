@@ -25,6 +25,7 @@ public interface GithubApi {
     Map<String, Object> getContent(@PathParam("gitOwner") String gitOwner,
                                    @PathParam("gitRepo") String gitRepo,
                                    @PathParam("file") String file,
+                                   @QueryParam("ref") String branch,
                                    @NotBody String token
     );
 
@@ -42,10 +43,10 @@ public interface GithubApi {
     @Path("/{gitOwner}/{gitRepo}/contents/{file}")
     @ClientHeaderParam(name = "Authorization", value = "Bearer {token}")
     Map<String, Object> deleteContent(@PathParam("gitOwner") String gitOwner,
-                                   @PathParam("gitRepo") String gitRepo,
-                                   @PathParam("file") String file,
-                                   @NotBody String token,
-                                   GitHubCommitRequest data
+                                      @PathParam("gitRepo") String gitRepo,
+                                      @PathParam("file") String file,
+                                      @NotBody String token,
+                                      GitHubCommitRequest data
     );
 
     @GET
@@ -54,6 +55,7 @@ public interface GithubApi {
     List<Map<String, Object>> listDirectory(@PathParam("gitOwner") String gitOwner,
                                             @PathParam("gitRepo") String gitRepo,
                                             @PathParam("path") String path,
+                                            @QueryParam("ref") String branch,
                                             @NotBody String token
     );
 }

@@ -8,7 +8,6 @@ public class GitConstants {
     public static final String EMPTY = "";
     public static final String SLASH = "/";
     public static final String TEMPLATES = "templates";
-    public static final String DEFAULT_BRANCH = "main";
     public static final String SHA = "sha";
     public static final String NAME = "name";
     public static final String CONTENT = "content";

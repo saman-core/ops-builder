@@ -32,10 +32,10 @@ public class GithubClient implements GitClient {
     @ConfigProperty(name = "git.owner")
     String gitOwner;
 
-    public List<Node> listDirectories(String directory, String token) {
+    public List<Node> listDirectories(String directory, String branch, String token) {
         List<Map<String, Object>> responseApi = new ArrayList<>();
         try {
-            responseApi = api.listDirectory(gitOwner, gitRepo, directory, token);
+            responseApi = api.listDirectory(gitOwner, gitRepo, directory, branch, token);
         } catch (WebApplicationException e) {
             log.warnf(e, "WebApplicationException in PATH: %s", directory);
         }
@@ -52,8 +52,8 @@ public class GithubClient implements GitClient {
                 .toList();
     }
 
-    public Node getFile(String file, String token) {
-        var responseApi = api.getContent(gitOwner, gitRepo, file, token);
+    public Node getFile(String file, String branch, String token) {
+        var responseApi = api.getContent(gitOwner, gitRepo, file, branch, token);
         var sha = String.valueOf(responseApi.get(SHA));
         var name = String.valueOf(responseApi.get(NAME));
         var content = String.valueOf(responseApi.get(CONTENT));
@@ -64,13 +64,13 @@ public class GithubClient implements GitClient {
                 .build();
     }
 
-    public Node persistFile(String file, String message, String content, String sha, Author author, String token) {
+    public Node persistFile(String file, String message, String content, String sha, Author author, String branch, String token) {
         var data = GitHubCommitRequest.newBuilder()
                 .setMessage(message)
                 .setSha(sha)
                 .setCommitter(author)
                 .setContent(content)
-                .setBranch(DEFAULT_BRANCH)
+                .setBranch(branch)
                 .build();
 
         var responseApi = api.setContent(gitOwner, gitRepo, file, token, data);
@@ -82,12 +82,12 @@ public class GithubClient implements GitClient {
                 .build();
     }
 
-    public Node deleteFile(String file, String message, String sha, Author author, String token) {
+    public Node deleteFile(String file, String message, String sha, Author author, String branch, String token) {
         var data = GitHubCommitRequest.newBuilder()
                 .setMessage(message)
                 .setSha(sha)
                 .setCommitter(author)
-                .setBranch(DEFAULT_BRANCH)
+                .setBranch(branch)
                 .build();
 
         var responseApi = api.deleteContent(gitOwner, gitRepo, file, token, data);
@@ -98,11 +98,11 @@ public class GithubClient implements GitClient {
                 .build();
     }
 
-    public Map<String, ConditionsProperty> getMapConditionsTemplate(String path, String token) {
+    public Map<String, ConditionsProperty> getMapConditionsTemplate(String path, String branch, String token) {
         Map<String, ConditionsProperty> mapConditions = new HashMap<>();
         List<Map<String, Object>> responseApi = new ArrayList<>();
         try {
-            responseApi = api.listDirectory(gitOwner, gitRepo, path, token);
+            responseApi = api.listDirectory(gitOwner, gitRepo, path, branch, token);
         } catch (WebApplicationException e) {
             log.warnf(e, "WebApplicationException in PATH: %s", path);
         }

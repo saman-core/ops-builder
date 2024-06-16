@@ -6,7 +6,9 @@ import io.samancore.template_builder.service.GitService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.UriInfo;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.List;
@@ -18,6 +20,8 @@ public class ResourceApi {
     String claimName;
     @ConfigProperty(name = "oidc.claim.token")
     String claimToken;
+    @ConfigProperty(name = "git.default_branch")
+    String defaultBranch;
 
     @Inject
     GitService service;
@@ -25,12 +29,16 @@ public class ResourceApi {
     @Inject
     UserInfo userInfo;
 
+    @Context
+    UriInfo uriInfo;
+
     @GET
     @Path("")
     @RolesAllowed({"admin"})
     public List<Node> getAllProducts() {
         var token = userInfo.getString(claimToken);
-        return service.listProducts(token);
+        var branch = getBranch();
+        return service.listProducts(branch, token);
     }
 
     @GET
@@ -38,7 +46,8 @@ public class ResourceApi {
     @RolesAllowed({"admin"})
     public Node getProduct(@PathParam("product") String product) {
         var token = userInfo.getString(claimToken);
-        return service.getProduct(product, token);
+        var branch = getBranch();
+        return service.getProduct(product, branch, token);
     }
 
     @GET
@@ -46,7 +55,8 @@ public class ResourceApi {
     @RolesAllowed({"admin"})
     public List<Node> getAllTemplatesByProduct(@PathParam("product") String product) {
         var token = userInfo.getString(claimToken);
-        return service.listTemplates(product, token);
+        var branch = getBranch();
+        return service.listTemplates(product, branch, token);
     }
 
     @GET
@@ -54,7 +64,8 @@ public class ResourceApi {
     @RolesAllowed({"admin"})
     public Node getTemplate(@PathParam("product") String product, @PathParam("template") String template) {
         var token = userInfo.getString(claimToken);
-        return service.getTemplateJson(product, template, token);
+        var branch = getBranch();
+        return service.getTemplateJson(product, template, branch, token);
     }
 
     @POST
@@ -69,7 +80,8 @@ public class ResourceApi {
                 .setName(name)
                 .setEmail(email)
                 .build();
-        return service.persistTemplate(product, template, commitRequest, committer, token);
+        var branch = getBranch();
+        return service.persistTemplate(product, template, commitRequest, committer, branch, token);
     }
 
     @GET
@@ -77,7 +89,8 @@ public class ResourceApi {
     @RolesAllowed({"admin"})
     public ConditionsProperty getConditionsProperty(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property) {
         var token = userInfo.getString(claimToken);
-        return service.getConditionsProperty(product, template, property, token);
+        var branch = getBranch();
+        return service.getConditionsProperty(product, template, property, branch, token);
     }
 
     @GET
@@ -85,7 +98,8 @@ public class ResourceApi {
     @RolesAllowed({"admin"})
     public List<ConditionsProperty> getAllConditionsPropertiesByTemplate(@PathParam("product") String product, @PathParam("template") String template) {
         var token = userInfo.getString(claimToken);
-        return service.getConditionsTemplate(product, template, token);
+        var branch = getBranch();
+        return service.getConditionsTemplate(product, template, branch, token);
     }
 
     @GET
@@ -93,7 +107,8 @@ public class ResourceApi {
     @RolesAllowed({"admin"})
     public Node getCondition(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property, @PathParam("type") ConditionType type) {
         var token = userInfo.getString(claimToken);
-        return service.getConditionProperty(product, template, property, type, token);
+        var branch = getBranch();
+        return service.getConditionProperty(product, template, property, type, branch, token);
     }
 
     @POST
@@ -108,7 +123,8 @@ public class ResourceApi {
                 .setName(name)
                 .setEmail(email)
                 .build();
-        return service.persistConditionProperty(product, template, property, type, commitRequest, committer, token);
+        var branch = getBranch();
+        return service.persistConditionProperty(product, template, property, type, commitRequest, committer, branch, token);
     }
 
     @DELETE
@@ -123,6 +139,12 @@ public class ResourceApi {
                 .setName(name)
                 .setEmail(email)
                 .build();
-        return service.deleteConditionProperty(product, template, property, type, commitRequest, committer, token);
+        var branch = getBranch();
+        return service.deleteConditionProperty(product, template, property, type, commitRequest, committer, branch, token);
+    }
+
+    private String getBranch() {
+        var branch = uriInfo.getQueryParameters().getFirst("_branch");
+        return branch == null ? defaultBranch : branch;
     }
 }

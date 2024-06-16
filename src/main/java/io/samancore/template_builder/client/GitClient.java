@@ -9,13 +9,13 @@ import java.util.Map;
 
 public interface GitClient {
 
-    List<Node> listDirectories(String directory, String token);
+    List<Node> listDirectories(String directory, String branch, String token);
 
-    Node getFile(String file, String token);
+    Node getFile(String file, String branch, String token);
 
-    Node persistFile(String file, String message, String content, String sha, Author author, String token);
+    Node persistFile(String file, String message, String content, String sha, Author author, String branch, String token);
 
-    Node deleteFile(String file, String message, String sha, Author author, String token);
+    Node deleteFile(String file, String message, String sha, Author author, String branch, String token);
 
-    Map<String, ConditionsProperty> getMapConditionsTemplate(String path, String token);
+    Map<String, ConditionsProperty> getMapConditionsTemplate(String path, String branch, String token);
 }
