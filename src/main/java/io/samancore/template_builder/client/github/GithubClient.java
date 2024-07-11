@@ -1,10 +1,7 @@
 package io.samancore.template_builder.client.github;
 
 import io.samancore.template_builder.client.GitClient;
-import io.samancore.template_builder.model.Author;
-import io.samancore.template_builder.model.ConditionType;
-import io.samancore.template_builder.model.ConditionsProperty;
-import io.samancore.template_builder.model.Node;
+import io.samancore.template_builder.model.*;
 import io.samancore.template_builder.model.github.GitHubCommitRequest;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -32,10 +29,10 @@ public class GithubClient implements GitClient {
     @ConfigProperty(name = "git.owner")
     String gitOwner;
 
-    public List<Node> listDirectories(String directory, String branch, String token) {
+    public List<Node> listDirectories(String directory, AccessInfo accessInfo) {
         List<Map<String, Object>> responseApi = new ArrayList<>();
         try {
-            responseApi = api.listDirectory(gitOwner, gitRepo, directory, branch, token);
+            responseApi = api.listDirectory(gitOwner, gitRepo, directory, accessInfo.getBranch(), accessInfo.getToken());
         } catch (WebApplicationException e) {
             log.warnf(e, "WebApplicationException in PATH: %s", directory);
         }
@@ -52,8 +49,8 @@ public class GithubClient implements GitClient {
                 .toList();
     }
 
-    public Node getFile(String file, String branch, String token) {
-        var responseApi = api.getContent(gitOwner, gitRepo, file, branch, token);
+    public Node getFile(String file, AccessInfo accessInfo) {
+        var responseApi = api.getContent(gitOwner, gitRepo, file, accessInfo.getBranch(), accessInfo.getToken());
         var sha = String.valueOf(responseApi.get(SHA));
         var name = String.valueOf(responseApi.get(NAME));
         var content = String.valueOf(responseApi.get(CONTENT));
@@ -64,16 +61,16 @@ public class GithubClient implements GitClient {
                 .build();
     }
 
-    public Node persistFile(String file, String message, String content, String sha, Author author, String branch, String token) {
+    public Node persistFile(String file, String message, String content, String sha, Author author, AccessInfo accessInfo) {
         var data = GitHubCommitRequest.newBuilder()
                 .setMessage(message)
                 .setSha(sha)
                 .setCommitter(author)
                 .setContent(content)
-                .setBranch(branch)
+                .setBranch(accessInfo.getBranch())
                 .build();
 
-        var responseApi = api.setContent(gitOwner, gitRepo, file, token, data);
+        var responseApi = api.setContent(gitOwner, gitRepo, file, accessInfo.getToken(), data);
         var responseContent = (Map<String, Objects>) responseApi.get(CONTENT);
         var newSha = String.valueOf(responseContent.get(SHA));
         return Node.newBuilder()
@@ -82,15 +79,15 @@ public class GithubClient implements GitClient {
                 .build();
     }
 
-    public Node deleteFile(String file, String message, String sha, Author author, String branch, String token) {
+    public Node deleteFile(String file, String message, String sha, Author author, AccessInfo accessInfo) {
         var data = GitHubCommitRequest.newBuilder()
                 .setMessage(message)
                 .setSha(sha)
                 .setCommitter(author)
-                .setBranch(branch)
+                .setBranch(accessInfo.getBranch())
                 .build();
 
-        var responseApi = api.deleteContent(gitOwner, gitRepo, file, token, data);
+        var responseApi = api.deleteContent(gitOwner, gitRepo, file, accessInfo.getToken(), data);
         var responseContent = (Map<String, Objects>) responseApi.get(COMMIT);
         var newSha = String.valueOf(responseContent.get(SHA));
         return Node.newBuilder()
@@ -98,11 +95,11 @@ public class GithubClient implements GitClient {
                 .build();
     }
 
-    public Map<String, ConditionsProperty> getMapConditionsTemplate(String path, String branch, String token) {
+    public Map<String, ConditionsProperty> getMapConditionsTemplate(String path, AccessInfo accessInfo) {
         Map<String, ConditionsProperty> mapConditions = new HashMap<>();
         List<Map<String, Object>> responseApi = new ArrayList<>();
         try {
-            responseApi = api.listDirectory(gitOwner, gitRepo, path, branch, token);
+            responseApi = api.listDirectory(gitOwner, gitRepo, path, accessInfo.getBranch(), accessInfo.getToken());
         } catch (WebApplicationException e) {
             log.warnf(e, "WebApplicationException in PATH: %s", path);
         }

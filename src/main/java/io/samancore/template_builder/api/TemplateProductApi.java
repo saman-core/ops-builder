@@ -2,7 +2,7 @@ package io.samancore.template_builder.api;
 
 import io.quarkus.oidc.UserInfo;
 import io.samancore.template_builder.model.*;
-import io.samancore.template_builder.service.GitService;
+import io.samancore.template_builder.service.TemplateProductService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @Path("/products/")
 @Produces(MediaType.APPLICATION_JSON)
-public class ResourceApi {
+public class TemplateProductApi {
     @ConfigProperty(name = "oidc.claim.name")
     String claimName;
     @ConfigProperty(name = "oidc.claim.token")
@@ -24,7 +24,7 @@ public class ResourceApi {
     String defaultBranch;
 
     @Inject
-    GitService service;
+    TemplateProductService service;
 
     @Inject
     UserInfo userInfo;
@@ -38,7 +38,11 @@ public class ResourceApi {
     public List<Node> getAllProducts() {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
-        return service.listProducts(branch, token);
+        var accessInfo = AccessInfo.newBuilder()
+                .setToken(token)
+                .setBranch(branch)
+                .build();
+        return service.listProducts(accessInfo);
     }
 
     @GET
@@ -47,7 +51,11 @@ public class ResourceApi {
     public Node getProduct(@PathParam("product") String product) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
-        return service.getProduct(product, branch, token);
+        var accessInfo = AccessInfo.newBuilder()
+                .setToken(token)
+                .setBranch(branch)
+                .build();
+        return service.getProduct(product, accessInfo);
     }
 
     @GET
@@ -56,7 +64,11 @@ public class ResourceApi {
     public List<Node> getAllTemplatesByProduct(@PathParam("product") String product) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
-        return service.listTemplates(product, branch, token);
+        var accessInfo = AccessInfo.newBuilder()
+                .setToken(token)
+                .setBranch(branch)
+                .build();
+        return service.listTemplates(product, accessInfo);
     }
 
     @GET
@@ -65,7 +77,11 @@ public class ResourceApi {
     public Node getTemplate(@PathParam("product") String product, @PathParam("template") String template) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
-        return service.getTemplateJson(product, template, branch, token);
+        var accessInfo = AccessInfo.newBuilder()
+                .setToken(token)
+                .setBranch(branch)
+                .build();
+        return service.getTemplateJson(product, template, accessInfo);
     }
 
     @POST
@@ -81,7 +97,11 @@ public class ResourceApi {
                 .setEmail(email)
                 .build();
         var branch = getBranch();
-        return service.persistTemplate(product, template, commitRequest, committer, branch, token);
+        var accessInfo = AccessInfo.newBuilder()
+                .setToken(token)
+                .setBranch(branch)
+                .build();
+        return service.persistTemplate(product, template, commitRequest, committer, accessInfo);
     }
 
     @GET
@@ -90,7 +110,11 @@ public class ResourceApi {
     public ConditionsProperty getConditionsProperty(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
-        return service.getConditionsProperty(product, template, property, branch, token);
+        var accessInfo = AccessInfo.newBuilder()
+                .setToken(token)
+                .setBranch(branch)
+                .build();
+        return service.getConditionsProperty(product, template, property, accessInfo);
     }
 
     @GET
@@ -99,7 +123,11 @@ public class ResourceApi {
     public List<ConditionsProperty> getAllConditionsPropertiesByTemplate(@PathParam("product") String product, @PathParam("template") String template) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
-        return service.getConditionsTemplate(product, template, branch, token);
+        var accessInfo = AccessInfo.newBuilder()
+                .setToken(token)
+                .setBranch(branch)
+                .build();
+        return service.getConditionsTemplate(product, template, accessInfo);
     }
 
     @GET
@@ -108,7 +136,11 @@ public class ResourceApi {
     public Node getCondition(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property, @PathParam("type") ConditionType type) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
-        return service.getConditionProperty(product, template, property, type, branch, token);
+        var accessInfo = AccessInfo.newBuilder()
+                .setToken(token)
+                .setBranch(branch)
+                .build();
+        return service.getConditionProperty(product, template, property, type, accessInfo);
     }
 
     @POST
@@ -124,7 +156,11 @@ public class ResourceApi {
                 .setEmail(email)
                 .build();
         var branch = getBranch();
-        return service.persistConditionProperty(product, template, property, type, commitRequest, committer, branch, token);
+        var accessInfo = AccessInfo.newBuilder()
+                .setToken(token)
+                .setBranch(branch)
+                .build();
+        return service.persistConditionProperty(product, template, property, type, commitRequest, committer, accessInfo);
     }
 
     @DELETE
@@ -140,7 +176,11 @@ public class ResourceApi {
                 .setEmail(email)
                 .build();
         var branch = getBranch();
-        return service.deleteConditionProperty(product, template, property, type, commitRequest, committer, branch, token);
+        var accessInfo = AccessInfo.newBuilder()
+                .setToken(token)
+                .setBranch(branch)
+                .build();
+        return service.deleteConditionProperty(product, template, property, type, commitRequest, committer, accessInfo);
     }
 
     private String getBranch() {
