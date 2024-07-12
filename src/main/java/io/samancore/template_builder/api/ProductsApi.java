@@ -2,7 +2,7 @@ package io.samancore.template_builder.api;
 
 import io.quarkus.oidc.UserInfo;
 import io.samancore.template_builder.model.*;
-import io.samancore.template_builder.service.TemplateProductService;
+import io.samancore.template_builder.service.ProductsService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @Path("/products/")
 @Produces(MediaType.APPLICATION_JSON)
-public class TemplateProductApi {
+public class ProductsApi {
     @ConfigProperty(name = "oidc.claim.name")
     String claimName;
     @ConfigProperty(name = "oidc.claim.token")
@@ -24,7 +24,7 @@ public class TemplateProductApi {
     String defaultBranch;
 
     @Inject
-    TemplateProductService service;
+    ProductsService service;
 
     @Inject
     UserInfo userInfo;
@@ -38,10 +38,7 @@ public class TemplateProductApi {
     public List<Node> getAllProducts() {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
-        var accessInfo = AccessInfo.newBuilder()
-                .setToken(token)
-                .setBranch(branch)
-                .build();
+        var accessInfo = new AccessInfoRecord(token, branch);
         return service.listProducts(accessInfo);
     }
 
@@ -51,23 +48,17 @@ public class TemplateProductApi {
     public Node getProduct(@PathParam("product") String product) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
-        var accessInfo = AccessInfo.newBuilder()
-                .setToken(token)
-                .setBranch(branch)
-                .build();
+        var accessInfo = new AccessInfoRecord(token, branch);
         return service.getProduct(product, accessInfo);
     }
 
     @GET
     @Path("{product}/templates/")
     @RolesAllowed({"admin"})
-    public List<Node> getAllTemplatesByProduct(@PathParam("product") String product) {
+    public List<Node> getAllTemplates(@PathParam("product") String product) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
-        var accessInfo = AccessInfo.newBuilder()
-                .setToken(token)
-                .setBranch(branch)
-                .build();
+        var accessInfo = new AccessInfoRecord(token, branch);
         return service.listTemplates(product, accessInfo);
     }
 
@@ -77,10 +68,7 @@ public class TemplateProductApi {
     public Node getTemplate(@PathParam("product") String product, @PathParam("template") String template) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
-        var accessInfo = AccessInfo.newBuilder()
-                .setToken(token)
-                .setBranch(branch)
-                .build();
+        var accessInfo = new AccessInfoRecord(token, branch);
         return service.getTemplateJson(product, template, accessInfo);
     }
 
@@ -97,10 +85,7 @@ public class TemplateProductApi {
                 .setEmail(email)
                 .build();
         var branch = getBranch();
-        var accessInfo = AccessInfo.newBuilder()
-                .setToken(token)
-                .setBranch(branch)
-                .build();
+        var accessInfo = new AccessInfoRecord(token, branch);
         return service.persistTemplate(product, template, commitRequest, committer, accessInfo);
     }
 
@@ -110,10 +95,7 @@ public class TemplateProductApi {
     public ConditionsProperty getConditionsProperty(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
-        var accessInfo = AccessInfo.newBuilder()
-                .setToken(token)
-                .setBranch(branch)
-                .build();
+        var accessInfo = new AccessInfoRecord(token, branch);
         return service.getConditionsProperty(product, template, property, accessInfo);
     }
 
@@ -123,10 +105,7 @@ public class TemplateProductApi {
     public List<ConditionsProperty> getAllConditionsPropertiesByTemplate(@PathParam("product") String product, @PathParam("template") String template) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
-        var accessInfo = AccessInfo.newBuilder()
-                .setToken(token)
-                .setBranch(branch)
-                .build();
+        var accessInfo = new AccessInfoRecord(token, branch);
         return service.getConditionsTemplate(product, template, accessInfo);
     }
 
@@ -136,10 +115,7 @@ public class TemplateProductApi {
     public Node getCondition(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property, @PathParam("type") ConditionType type) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
-        var accessInfo = AccessInfo.newBuilder()
-                .setToken(token)
-                .setBranch(branch)
-                .build();
+        var accessInfo = new AccessInfoRecord(token, branch);
         return service.getConditionProperty(product, template, property, type, accessInfo);
     }
 
@@ -156,10 +132,7 @@ public class TemplateProductApi {
                 .setEmail(email)
                 .build();
         var branch = getBranch();
-        var accessInfo = AccessInfo.newBuilder()
-                .setToken(token)
-                .setBranch(branch)
-                .build();
+        var accessInfo = new AccessInfoRecord(token, branch);
         return service.persistConditionProperty(product, template, property, type, commitRequest, committer, accessInfo);
     }
 
@@ -176,10 +149,7 @@ public class TemplateProductApi {
                 .setEmail(email)
                 .build();
         var branch = getBranch();
-        var accessInfo = AccessInfo.newBuilder()
-                .setToken(token)
-                .setBranch(branch)
-                .build();
+        var accessInfo = new AccessInfoRecord(token, branch);
         return service.deleteConditionProperty(product, template, property, type, commitRequest, committer, accessInfo);
     }
 

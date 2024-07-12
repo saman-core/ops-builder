@@ -17,6 +17,7 @@ public class GitConstants {
     public static final String DMN_EXTENSION = ".dmn";
     public static final String DOT = ".";
     public static final String PRODUCTS = "products";
+    public static final String BUSINESS = "business";
 
     private GitConstants() {
     }
