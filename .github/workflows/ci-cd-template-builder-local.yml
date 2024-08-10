@@ -1,4 +1,4 @@
-name: CI-CD-TEMPLATE-BUILDER
+name: CI-CD-TEMPLATE-BUILDER-LOCAL
 on:
   workflow_dispatch:
 
