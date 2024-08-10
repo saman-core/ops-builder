@@ -1,0 +1,65 @@
+name: CI-CD-TEMPLATE-BUILDER
+on:
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  ACTOR: saman-core
+  IMAGE_APP_NAME: template-builder
+  APP_NAME: template-builder
+  N_REPLICA: 1
+
+jobs:
+  build_contenizer:
+    name: Build & Contenerize App
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup graalvm
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '17'
+          distribution: 'mandrel'
+          github-token: ${{ secrets.GIT_TOKEN }}
+          native-image-job-reports: 'true'
+          version: '22.3.3.1-Final'
+
+      - name: Set env
+        env:
+          BASE64: ${{ secrets.ENV_FILE }}
+        run: |
+          base64 -d -i <<<$(echo $BASE64) > .env
+
+      - name: Build native app
+        run: |
+          ./mvnw package -Dnative -DskipTests
+
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Setup docker buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to the container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ env.ACTOR }}
+          password: ${{ secrets.GIT_TOKEN }}
+
+      - name: Container app build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./
+          file: ./src/main/docker/Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.ACTOR }}/${{ env.IMAGE_APP_NAME }}:${{ github.sha }}
+
+      - name: Show deployment local
+        run: |
+          sed -i -e 's/CONTAINER_IMAGE/${{ env.REGISTRY }}\/${{ env.ACTOR }}\/${{ env.IMAGE_APP_NAME }}:${{ github.sha }}/g' -e 's/APP_VERSION/${{ github.run_number }}/g' -e 's/APP_NAME/${{ env.APP_NAME }}/g' -e 's/DEPLOY_HASH/${{ github.sha }}/g' -e 's/N_REPLICA/${{ env.N_REPLICA }}/g' ./deployment-local.yml
+          echo '----------------------------------------------'
+          cat ./deployment-local.yml
