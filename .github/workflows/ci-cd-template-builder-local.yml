@@ -61,15 +61,12 @@ jobs:
       - name: Set Kubectl
         uses: azure/setup-kubectl@v4
 
-      - name: Set Kubeconfig file
+      - name: Set Kubeconfig file and deploy app to K8S
         env:
           BASE64: ${{ secrets.KUBE_CONFIG }}
         run: |
           base64 -d -i <<<$(echo $BASE64) > ./kubeconfig
           export KUBECONFIG=./kubeconfig
-
-      - name: Deploy app to K8S
-        run: |
           sed -i -e 's/CONTAINER_IMAGE/${{ env.REGISTRY }}\/${{ env.ACTOR }}\/${{ env.IMAGE_APP_NAME }}:${{ github.sha }}/g' -e 's/APP_VERSION/${{ github.run_number }}/g' -e 's/APP_NAME/${{ env.APP_NAME }}/g' -e 's/DEPLOY_HASH/${{ github.sha }}/g' -e 's/N_REPLICA/${{ env.N_REPLICA }}/g' ./deployment.yml
           kubectl delete -f ./deployment.yml -n api --insecure-skip-tls-verify || true
           kubectl apply -f ./deployment.yml -n api --insecure-skip-tls-verify
