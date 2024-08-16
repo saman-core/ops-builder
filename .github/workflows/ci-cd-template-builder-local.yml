@@ -27,12 +27,6 @@ jobs:
           native-image-job-reports: 'true'
           version: '22.3.3.1-Final'
 
-      - name: Set env
-        env:
-          BASE64: ${{ secrets.ENV_FILE_LOCAL }}
-        run: |
-          base64 -d -i <<<$(echo $BASE64) > .env
-
       - name: Build native app
         run: |
           ./mvnw package -Dnative -DskipTests
@@ -61,12 +55,23 @@ jobs:
       - name: Set Kubectl
         uses: azure/setup-kubectl@v4
 
+      - name: Set config file
+        env:
+          BASE64: ${{ secrets.ENV_FILE_LOCAL }}
+        run: |
+          base64 -d -i <<<$(echo $BASE64) >> .env
+          sed -i 's/=/: /' .env
+          sed -i 's/^/  /' .env
+          sed -i 's/APP_NAME/${{ env.APP_NAME }}/g' ./kubernetes/deploy-secret.yml
+          cat .env >> ./kubernetes/deploy-secret.yml
+
       - name: Set Kubeconfig file and deploy app to K8S
         env:
           BASE64: ${{ secrets.KUBE_CONFIG }}
         run: |
           base64 -d -i <<<$(echo $BASE64) > ./kubeconfig
           export KUBECONFIG=./kubeconfig
-          sed -i -e 's/CONTAINER_IMAGE/${{ env.REGISTRY }}\/${{ env.ACTOR }}\/${{ env.IMAGE_APP_NAME }}:${{ github.sha }}/g' -e 's/APP_VERSION/${{ github.run_number }}/g' -e 's/APP_NAME/${{ env.APP_NAME }}/g' -e 's/DEPLOY_HASH/${{ github.sha }}/g' -e 's/N_REPLICA/${{ env.N_REPLICA }}/g' ./deployment-local.yml
-          kubectl delete -f ./deployment-local.yml -n api --insecure-skip-tls-verify || true
-          kubectl apply -f ./deployment-local.yml -n api --insecure-skip-tls-verify
+          sed -i -e 's/CONTAINER_IMAGE/${{ env.REGISTRY }}\/${{ env.ACTOR }}\/${{ env.IMAGE_APP_NAME }}:${{ github.sha }}/g' -e 's/APP_VERSION/${{ github.run_number }}/g' -e 's/APP_NAME/${{ env.APP_NAME }}/g' -e 's/DEPLOY_HASH/${{ github.sha }}/g' -e 's/N_REPLICA/${{ env.N_REPLICA }}/g' ./kubernetes/deployment-local.yml
+          kubectl apply -f ./kubernetes/deploy-secret.yml -n api --insecure-skip-tls-verify
+          kubectl delete -f ./kubernetes/deployment-local.yml -n api --insecure-skip-tls-verify || true
+          kubectl apply -f ./kubernetes/deployment-local.yml -n api --insecure-skip-tls-verify
