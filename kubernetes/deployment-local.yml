@@ -1,100 +1,27 @@
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: serving.knative.dev/v1
+kind: Service
 metadata:
-  labels:
-    app: APP_NAME
-    version: v-APP_VERSION
   name: APP_NAME
 spec:
-  replicas: N_REPLICA
-  selector:
-    matchLabels:
-      app: APP_NAME
-      version: v-APP_VERSION
   template:
-    metadata:
-      labels:
-        app: APP_NAME
-        version: v-APP_VERSION
     spec:
       containers:
         - image: CONTAINER_IMAGE
-          imagePullPolicy: Always
-          name: APP_NAME
-          ports:
-            - containerPort: 8080
-              protocol: TCP
           envFrom:
             - configMapRef:
                 name: APP_NAME-deploy-secret
+          imagePullPolicy: IfNotPresent
+          name: APP_NAME
+          ports:
+            - containerPort: 8080
+              name: http1
+              protocol: TCP
           volumeMounts:
             - mountPath: /work/certs
               name: certs
               readOnly: true
-      imagePullSecrets:
-        - name: regcred
-      restartPolicy: Always
       volumes:
         - name: certs
           secret:
             secretName: certs
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    account: APP_NAME
-  name: APP_NAME
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: APP_NAME
-    service: APP_NAME
-  name: APP_NAME
-spec:
-  ports:
-    - name: http
-      port: 8080
-      protocol: TCP
-      targetPort: 8080
-  selector:
-    app: APP_NAME
-  type: ClusterIP
----
-apiVersion: networking.istio.io/v1beta1
-kind: Gateway
-metadata:
-  name: APP_NAME-gateway
-spec:
-  selector:
-    istio: ingressgateway
-  servers:
-    - port:
-        number: 443
-        name: https
-        protocol: HTTPS
-      tls:
-        mode: SIMPLE
-        credentialName: tls-secret
-      hosts:
-        - APP_NAME.nacxio.com
----
-apiVersion: networking.istio.io/v1beta1
-kind: VirtualService
-metadata:
-  name: APP_NAME
-spec:
-  gateways:
-    - APP_NAME-gateway
-  hosts:
-    - APP_NAME.nacxio.com
-  http:
-    - route:
-        - destination:
-            host: APP_NAME
-            port:
-              number: 8080
----
