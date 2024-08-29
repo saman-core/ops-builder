@@ -25,4 +25,8 @@ public interface ProductsService {
     Node persistConditionProperty(String product, String template, String property, ConditionType type, CommitRequest commitRequest, Author author, AccessInfoRecord accessInfoRecord);
 
     Node deleteConditionProperty(String product, String template, String property, ConditionType type, CommitRequest commitRequest, Author author, AccessInfoRecord accessInfoRecord);
+
+    Node getWorkflowJson(String product, AccessInfoRecord accessInfoRecord);
+
+    Node persistWorkflow(String product, CommitRequest commitRequest, Author author, AccessInfoRecord accessInfoRecord);
 }

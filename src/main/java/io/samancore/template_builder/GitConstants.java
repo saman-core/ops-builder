@@ -18,6 +18,7 @@ public class GitConstants {
     public static final String DOT = ".";
     public static final String PRODUCTS = "products";
     public static final String BUSINESS = "business";
+    public static final String WORKFLOW_FILE = "workflow.json";
 
     private GitConstants() {
     }

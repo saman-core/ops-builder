@@ -153,6 +153,33 @@ public class ProductsApi {
         return service.deleteConditionProperty(product, template, property, type, commitRequest, committer, accessInfo);
     }
 
+    @GET
+    @Path("{product}/workflow")
+    @RolesAllowed({"admin"})
+    public Node getWorkflow(@PathParam("product") String product) {
+        var token = userInfo.getString(claimToken);
+        var branch = getBranch();
+        var accessInfo = new AccessInfoRecord(token, branch);
+        return service.getWorkflowJson(product, accessInfo);
+    }
+
+    @POST
+    @Path("{product}/workflow")
+    @RolesAllowed({"admin"})
+    public Node persistWorkflow(@PathParam("product") String product, CommitRequest commitRequest) {
+        var token = userInfo.getString(claimToken);
+        var name = userInfo.getString(claimName);
+        var email = userInfo.getEmail();
+
+        var committer = Author.newBuilder()
+                .setName(name)
+                .setEmail(email)
+                .build();
+        var branch = getBranch();
+        var accessInfo = new AccessInfoRecord(token, branch);
+        return service.persistWorkflow(product, commitRequest, committer, accessInfo);
+    }
+
     private String getBranch() {
         var branch = uriInfo.getQueryParameters().getFirst("_branch");
         return branch == null ? defaultBranch : branch;

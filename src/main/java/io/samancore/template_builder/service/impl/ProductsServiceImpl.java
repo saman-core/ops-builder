@@ -91,4 +91,20 @@ public class ProductsServiceImpl implements ProductsService {
         var sha = commitRequest.getData().getId();
         return client.deleteFile(file, message, sha, author, accessInfoRecord);
     }
+
+    @Override
+    public Node getWorkflowJson(String product, AccessInfoRecord accessInfoRecord) {
+        var file = PRODUCTS_SLASH.concat(product).concat(SLASH).concat(WORKFLOW_FILE);
+        return client.getFile(file, accessInfoRecord);
+    }
+
+    @Override
+    public Node persistWorkflow(String product, CommitRequest commitRequest, Author author, AccessInfoRecord accessInfoRecord) {
+        var file = PRODUCTS_SLASH.concat(product).concat(SLASH).concat(WORKFLOW_FILE);
+
+        var message = commitRequest.getMessage();
+        var content = commitRequest.getData().getContent();
+        var sha = commitRequest.getData().getId();
+        return client.persistFile(file, message, content, sha, author, accessInfoRecord);
+    }
 }
