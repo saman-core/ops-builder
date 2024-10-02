@@ -23,11 +23,11 @@ jobs:
       - name: Setup graalvm
         uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'mandrel'
           github-token: ${{ secrets.GIT_TOKEN }}
           native-image-job-reports: 'true'
-          version: '22.3.3.1-Final'
+          version: '23.1.4.0-Final'
 
       - name: Set env
         env:
