@@ -1,8 +1,8 @@
 
 ###
-FROM registry.access.redhat.com/ubi9-minimal:9.3 AS ubi
+FROM registry.access.redhat.com/ubi9-minimal:9.4 AS ubi
 # -- Stage scratch
-FROM registry.access.redhat.com/ubi9-micro:9.3 AS scratch
+FROM registry.access.redhat.com/ubi9-micro:9.4 AS scratch
 # -- Final Stage
 FROM scratch
 COPY --from=ubi /usr/lib64/libgcc_s.so.1 /usr/lib64/libgcc_s.so.1
