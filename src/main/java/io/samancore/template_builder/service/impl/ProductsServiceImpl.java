@@ -18,31 +18,44 @@ public class ProductsServiceImpl implements ProductsService {
     GitClient client;
 
     @Override
-    public List<Node> listProducts(AccessInfoRecord accessInfoRecord) {
-        return client.listDirectories(PRODUCTS, accessInfoRecord);
+    public List<Node> listProducts(String module,
+                                   AccessInfoRecord accessInfoRecord) {
+        return client.listDirectories(module.concat(SLASH).concat(PRODUCTS), accessInfoRecord);
     }
 
     @Override
-    public Node getProduct(String product, AccessInfoRecord accessInfoRecord) {
-        var file = PRODUCTS_SLASH.concat(product).concat(SLASH).concat(INFO_FILE);
+    public Node getProduct(String module,
+                           String product,
+                           AccessInfoRecord accessInfoRecord) {
+        var file = module.concat(SLASH).concat(PRODUCTS_SLASH).concat(product).concat(SLASH).concat(INFO_FILE);
         return client.getFile(file, accessInfoRecord);
     }
 
     @Override
-    public List<Node> listTemplates(String product, AccessInfoRecord accessInfoRecord) {
-        var path = PRODUCTS_SLASH.concat(product).concat(SLASH).concat(TEMPLATES);
+    public List<Node> listTemplates(String module,
+                                    String product,
+                                    AccessInfoRecord accessInfoRecord) {
+        var path = module.concat(SLASH).concat(PRODUCTS_SLASH).concat(product).concat(SLASH).concat(TEMPLATES);
         return client.listDirectories(path, accessInfoRecord);
     }
 
     @Override
-    public Node getTemplateJson(String product, String template, AccessInfoRecord accessInfoRecord) {
-        var file = PRODUCTS_SLASH.concat(product).concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(FORM_FILE);
+    public Node getTemplateJson(String module,
+                                String product,
+                                String template,
+                                AccessInfoRecord accessInfoRecord) {
+        var file = module.concat(SLASH).concat(PRODUCTS_SLASH).concat(product).concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(FORM_FILE);
         return client.getFile(file, accessInfoRecord);
     }
 
     @Override
-    public Node persistTemplate(String product, String template, CommitRequest commitRequest, Author author, AccessInfoRecord accessInfoRecord) {
-        var file = PRODUCTS_SLASH.concat(product).concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(FORM_FILE);
+    public Node persistTemplate(String module,
+                                String product,
+                                String template,
+                                CommitRequest commitRequest,
+                                Author author,
+                                AccessInfoRecord accessInfoRecord) {
+        var file = module.concat(SLASH).concat(PRODUCTS_SLASH).concat(product).concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(FORM_FILE);
 
         var message = commitRequest.getMessage();
         var content = commitRequest.getData().getContent();
@@ -51,30 +64,49 @@ public class ProductsServiceImpl implements ProductsService {
     }
 
     @Override
-    public ConditionsProperty getConditionsProperty(String product, String template, String property, AccessInfoRecord accessInfoRecord) {
-        var path = PRODUCTS_SLASH.concat(product).concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(CONDITIONS);
+    public ConditionsProperty getConditionsProperty(String module,
+                                                    String product,
+                                                    String template,
+                                                    String property,
+                                                    AccessInfoRecord accessInfoRecord) {
+        var path = module.concat(SLASH).concat(PRODUCTS_SLASH).concat(product).concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(CONDITIONS);
         var mapConditions = client.getMapConditionsTemplate(path, accessInfoRecord);
         return mapConditions.get(property);
     }
 
     @Override
-    public List<ConditionsProperty> getConditionsTemplate(String product, String template, AccessInfoRecord accessInfoRecord) {
-        var path = PRODUCTS_SLASH.concat(product).concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(CONDITIONS);
+    public List<ConditionsProperty> getConditionsTemplate(String module,
+                                                          String product,
+                                                          String template,
+                                                          AccessInfoRecord accessInfoRecord) {
+        var path = module.concat(SLASH).concat(PRODUCTS_SLASH).concat(product).concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(CONDITIONS);
         var mapConditions = client.getMapConditionsTemplate(path, accessInfoRecord);
         return List.copyOf(mapConditions.values());
     }
 
     @Override
-    public Node getConditionProperty(String product, String template, String property, ConditionType type, AccessInfoRecord accessInfoRecord) {
+    public Node getConditionProperty(String module,
+                                     String product,
+                                     String template,
+                                     String property,
+                                     ConditionType type,
+                                     AccessInfoRecord accessInfoRecord) {
         var conditionName = property.concat(type.getSuffix()).concat(DMN_EXTENSION);
-        var file = PRODUCTS_SLASH.concat(product).concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(CONDITIONS).concat(SLASH).concat(conditionName);
+        var file = module.concat(SLASH).concat(PRODUCTS_SLASH).concat(product).concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(CONDITIONS).concat(SLASH).concat(conditionName);
         return client.getFile(file, accessInfoRecord);
     }
 
     @Override
-    public Node persistConditionProperty(String product, String template, String property, ConditionType type, CommitRequest commitRequest, Author author, AccessInfoRecord accessInfoRecord) {
+    public Node persistConditionProperty(String module,
+                                         String product,
+                                         String template,
+                                         String property,
+                                         ConditionType type,
+                                         CommitRequest commitRequest,
+                                         Author author,
+                                         AccessInfoRecord accessInfoRecord) {
         var conditionName = property.concat(type.getSuffix()).concat(DMN_EXTENSION);
-        var file = PRODUCTS_SLASH.concat(product).concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(CONDITIONS).concat(SLASH).concat(conditionName);
+        var file = module.concat(SLASH).concat(PRODUCTS_SLASH).concat(product).concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(CONDITIONS).concat(SLASH).concat(conditionName);
 
         var message = commitRequest.getMessage();
         var content = commitRequest.getData().getContent();
@@ -83,9 +115,16 @@ public class ProductsServiceImpl implements ProductsService {
     }
 
     @Override
-    public Node deleteConditionProperty(String product, String template, String property, ConditionType type, CommitRequest commitRequest, Author author, AccessInfoRecord accessInfoRecord) {
+    public Node deleteConditionProperty(String module,
+                                        String product,
+                                        String template,
+                                        String property,
+                                        ConditionType type,
+                                        CommitRequest commitRequest,
+                                        Author author,
+                                        AccessInfoRecord accessInfoRecord) {
         var conditionName = property.concat(type.getSuffix()).concat(DMN_EXTENSION);
-        var file = PRODUCTS_SLASH.concat(product).concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(CONDITIONS).concat(SLASH).concat(conditionName);
+        var file = module.concat(SLASH).concat(PRODUCTS_SLASH).concat(product).concat(SLASH).concat(TEMPLATES).concat(SLASH).concat(template).concat(SLASH).concat(CONDITIONS).concat(SLASH).concat(conditionName);
 
         var message = commitRequest.getMessage();
         var sha = commitRequest.getData().getId();
@@ -93,14 +132,20 @@ public class ProductsServiceImpl implements ProductsService {
     }
 
     @Override
-    public Node getWorkflowJson(String product, AccessInfoRecord accessInfoRecord) {
-        var file = PRODUCTS_SLASH.concat(product).concat(SLASH).concat(WORKFLOW_FILE);
+    public Node getWorkflowJson(String module,
+                                String product,
+                                AccessInfoRecord accessInfoRecord) {
+        var file = module.concat(SLASH).concat(PRODUCTS_SLASH).concat(product).concat(SLASH).concat(WORKFLOW_FILE);
         return client.getFile(file, accessInfoRecord);
     }
 
     @Override
-    public Node persistWorkflow(String product, CommitRequest commitRequest, Author author, AccessInfoRecord accessInfoRecord) {
-        var file = PRODUCTS_SLASH.concat(product).concat(SLASH).concat(WORKFLOW_FILE);
+    public Node persistWorkflow(String module,
+                                String product,
+                                CommitRequest commitRequest,
+                                Author author,
+                                AccessInfoRecord accessInfoRecord) {
+        var file = module.concat(SLASH).concat(PRODUCTS_SLASH).concat(product).concat(SLASH).concat(WORKFLOW_FILE);
 
         var message = commitRequest.getMessage();
         var content = commitRequest.getData().getContent();

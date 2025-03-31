@@ -33,49 +33,56 @@ public class ProductsApi {
     UriInfo uriInfo;
 
     @GET
-    @Path("")
+    @Path("{module}")
     @RolesAllowed({"admin"})
-    public List<Node> getAllProducts() {
+    public List<Node> getAllProducts(@PathParam("module") String module) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
         var accessInfo = new AccessInfoRecord(token, branch);
-        return service.listProducts(accessInfo);
+        return service.listProducts(module, accessInfo);
     }
 
     @GET
-    @Path("{product}")
+    @Path("{module}/{product}")
     @RolesAllowed({"admin"})
-    public Node getProduct(@PathParam("product") String product) {
+    public Node getProduct(@PathParam("module") String module,
+                           @PathParam("product") String product) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
         var accessInfo = new AccessInfoRecord(token, branch);
-        return service.getProduct(product, accessInfo);
+        return service.getProduct(module, product, accessInfo);
     }
 
     @GET
-    @Path("{product}/templates/")
+    @Path("{module}/{product}/templates/")
     @RolesAllowed({"admin"})
-    public List<Node> getAllTemplates(@PathParam("product") String product) {
+    public List<Node> getAllTemplates(@PathParam("module") String module,
+                                      @PathParam("product") String product) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
         var accessInfo = new AccessInfoRecord(token, branch);
-        return service.listTemplates(product, accessInfo);
+        return service.listTemplates(module, product, accessInfo);
     }
 
     @GET
-    @Path("{product}/templates/{template}")
+    @Path("{module}/{product}/templates/{template}")
     @RolesAllowed({"admin"})
-    public Node getTemplate(@PathParam("product") String product, @PathParam("template") String template) {
+    public Node getTemplate(@PathParam("module") String module,
+                            @PathParam("product") String product,
+                            @PathParam("template") String template) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
         var accessInfo = new AccessInfoRecord(token, branch);
-        return service.getTemplateJson(product, template, accessInfo);
+        return service.getTemplateJson(module, product, template, accessInfo);
     }
 
     @POST
-    @Path("{product}/templates/{template}")
+    @Path("{module}/{product}/templates/{template}")
     @RolesAllowed({"admin"})
-    public Node persistTemplate(@PathParam("product") String product, @PathParam("template") String template, CommitRequest commitRequest) {
+    public Node persistTemplate(@PathParam("module") String module,
+                                @PathParam("product") String product,
+                                @PathParam("template") String template,
+                                CommitRequest commitRequest) {
         var token = userInfo.getString(claimToken);
         var name = userInfo.getString(claimName);
         var email = userInfo.getEmail();
@@ -86,43 +93,57 @@ public class ProductsApi {
                 .build();
         var branch = getBranch();
         var accessInfo = new AccessInfoRecord(token, branch);
-        return service.persistTemplate(product, template, commitRequest, committer, accessInfo);
+        return service.persistTemplate(module, product, template, commitRequest, committer, accessInfo);
     }
 
     @GET
-    @Path("{product}/templates/{template}/conditions/{property}")
+    @Path("{module}/{product}/templates/{template}/conditions/{property}")
     @RolesAllowed({"admin"})
-    public ConditionsProperty getConditionsProperty(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property) {
+    public ConditionsProperty getConditionsProperty(@PathParam("module") String module,
+                                                    @PathParam("product") String product,
+                                                    @PathParam("template") String template,
+                                                    @PathParam("property") String property) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
         var accessInfo = new AccessInfoRecord(token, branch);
-        return service.getConditionsProperty(product, template, property, accessInfo);
+        return service.getConditionsProperty(module, product, template, property, accessInfo);
     }
 
     @GET
-    @Path("{product}/templates/{template}/conditions/")
+    @Path("{module}/{product}/templates/{template}/conditions/")
     @RolesAllowed({"admin"})
-    public List<ConditionsProperty> getAllConditionsPropertiesByTemplate(@PathParam("product") String product, @PathParam("template") String template) {
+    public List<ConditionsProperty> getAllConditionsPropertiesByTemplate(@PathParam("module") String module,
+                                                                         @PathParam("product") String product,
+                                                                         @PathParam("template") String template) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
         var accessInfo = new AccessInfoRecord(token, branch);
-        return service.getConditionsTemplate(product, template, accessInfo);
+        return service.getConditionsTemplate(module, product, template, accessInfo);
     }
 
     @GET
-    @Path("{product}/templates/{template}/conditions/{property}/{type}")
+    @Path("{module}/{product}/templates/{template}/conditions/{property}/{type}")
     @RolesAllowed({"admin"})
-    public Node getCondition(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property, @PathParam("type") ConditionType type) {
+    public Node getCondition(@PathParam("module") String module,
+                             @PathParam("product") String product,
+                             @PathParam("template") String template,
+                             @PathParam("property") String property,
+                             @PathParam("type") ConditionType type) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
         var accessInfo = new AccessInfoRecord(token, branch);
-        return service.getConditionProperty(product, template, property, type, accessInfo);
+        return service.getConditionProperty(module, product, template, property, type, accessInfo);
     }
 
     @POST
-    @Path("{product}/templates/{template}/conditions/{property}/{type}")
+    @Path("{module}/{product}/templates/{template}/conditions/{property}/{type}")
     @RolesAllowed({"admin"})
-    public Node persistCondition(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property, @PathParam("type") ConditionType type, CommitRequest commitRequest) {
+    public Node persistCondition(@PathParam("module") String module,
+                                 @PathParam("product") String product,
+                                 @PathParam("template") String template,
+                                 @PathParam("property") String property,
+                                 @PathParam("type") ConditionType type,
+                                 CommitRequest commitRequest) {
         var token = userInfo.getString(claimToken);
         var name = userInfo.getString(claimName);
         var email = userInfo.getEmail();
@@ -133,13 +154,18 @@ public class ProductsApi {
                 .build();
         var branch = getBranch();
         var accessInfo = new AccessInfoRecord(token, branch);
-        return service.persistConditionProperty(product, template, property, type, commitRequest, committer, accessInfo);
+        return service.persistConditionProperty(module, product, template, property, type, commitRequest, committer, accessInfo);
     }
 
     @DELETE
-    @Path("{product}/templates/{template}/conditions/{property}/{type}")
+    @Path("{module}/{product}/templates/{template}/conditions/{property}/{type}")
     @RolesAllowed({"admin"})
-    public Node deleteCondition(@PathParam("product") String product, @PathParam("template") String template, @PathParam("property") String property, @PathParam("type") ConditionType type, CommitRequest commitRequest) {
+    public Node deleteCondition(@PathParam("module") String module,
+                                @PathParam("product") String product,
+                                @PathParam("template") String template,
+                                @PathParam("property") String property,
+                                @PathParam("type") ConditionType type,
+                                CommitRequest commitRequest) {
         var token = userInfo.getString(claimToken);
         var name = userInfo.getString(claimName);
         var email = userInfo.getEmail();
@@ -150,23 +176,26 @@ public class ProductsApi {
                 .build();
         var branch = getBranch();
         var accessInfo = new AccessInfoRecord(token, branch);
-        return service.deleteConditionProperty(product, template, property, type, commitRequest, committer, accessInfo);
+        return service.deleteConditionProperty(module, product, template, property, type, commitRequest, committer, accessInfo);
     }
 
     @GET
-    @Path("{product}/workflow")
+    @Path("{module}/{product}/workflow")
     @RolesAllowed({"admin"})
-    public Node getWorkflow(@PathParam("product") String product) {
+    public Node getWorkflow(@PathParam("module") String module,
+                            @PathParam("product") String product) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
         var accessInfo = new AccessInfoRecord(token, branch);
-        return service.getWorkflowJson(product, accessInfo);
+        return service.getWorkflowJson(module, product, accessInfo);
     }
 
     @POST
-    @Path("{product}/workflow")
+    @Path("{module}/{product}/workflow")
     @RolesAllowed({"admin"})
-    public Node persistWorkflow(@PathParam("product") String product, CommitRequest commitRequest) {
+    public Node persistWorkflow(@PathParam("module") String module,
+                                @PathParam("product") String product,
+                                CommitRequest commitRequest) {
         var token = userInfo.getString(claimToken);
         var name = userInfo.getString(claimName);
         var email = userInfo.getEmail();
@@ -177,7 +206,7 @@ public class ProductsApi {
                 .build();
         var branch = getBranch();
         var accessInfo = new AccessInfoRecord(token, branch);
-        return service.persistWorkflow(product, commitRequest, committer, accessInfo);
+        return service.persistWorkflow(module, product, commitRequest, committer, accessInfo);
     }
 
     private String getBranch() {
