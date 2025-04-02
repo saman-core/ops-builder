@@ -33,6 +33,16 @@ public class ProductsApi {
     UriInfo uriInfo;
 
     @GET
+    @Path("")
+    @RolesAllowed({"admin"})
+    public List<Node> getAllModules() {
+        var token = userInfo.getString(claimToken);
+        var branch = getBranch();
+        var accessInfo = new AccessInfoRecord(token, branch);
+        return service.listModules(accessInfo);
+    }
+
+    @GET
     @Path("{module}")
     @RolesAllowed({"admin"})
     public List<Node> getAllProducts(@PathParam("module") String module) {

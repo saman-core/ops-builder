@@ -18,6 +18,11 @@ public class ProductsServiceImpl implements ProductsService {
     GitClient client;
 
     @Override
+    public List<Node> listModules(AccessInfoRecord accessInfoRecord) {
+        return client.listDirectories("", accessInfoRecord);
+    }
+
+    @Override
     public List<Node> listProducts(String module,
                                    AccessInfoRecord accessInfoRecord) {
         return client.listDirectories(module.concat(SLASH).concat(PRODUCTS), accessInfoRecord);

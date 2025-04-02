@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface ProductsService {
 
+    List<Node> listModules(AccessInfoRecord accessInfoRecord);
+
     List<Node> listProducts(String module, AccessInfoRecord accessInfoRecord);
 
     Node getProduct(String module, String product, AccessInfoRecord accessInfoRecord);
