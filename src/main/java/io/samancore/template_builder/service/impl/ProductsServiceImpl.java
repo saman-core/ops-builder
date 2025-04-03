@@ -157,4 +157,24 @@ public class ProductsServiceImpl implements ProductsService {
         var sha = commitRequest.getData().getId();
         return client.persistFile(file, message, content, sha, author, accessInfoRecord);
     }
+
+    @Override
+    public Node getErJson(String module,
+                          AccessInfoRecord accessInfoRecord) {
+        var file = module.concat(SLASH).concat(ER_FILE);
+        return client.getFile(file, accessInfoRecord);
+    }
+
+    @Override
+    public Node persistEr(String module,
+                          CommitRequest commitRequest,
+                          Author author,
+                          AccessInfoRecord accessInfoRecord) {
+        var file = module.concat(SLASH).concat(ER_FILE);
+
+        var message = commitRequest.getMessage();
+        var content = commitRequest.getData().getContent();
+        var sha = commitRequest.getData().getId();
+        return client.persistFile(file, message, content, sha, author, accessInfoRecord);
+    }
 }

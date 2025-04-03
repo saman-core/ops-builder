@@ -219,6 +219,34 @@ public class ProductsApi {
         return service.persistWorkflow(module, product, commitRequest, committer, accessInfo);
     }
 
+    @GET
+    @Path("{module}/er/diagram")
+    @RolesAllowed({"admin"})
+    public Node getEr(@PathParam("module") String module) {
+        var token = userInfo.getString(claimToken);
+        var branch = getBranch();
+        var accessInfo = new AccessInfoRecord(token, branch);
+        return service.getErJson(module, accessInfo);
+    }
+
+    @POST
+    @Path("{module}/er/diagram")
+    @RolesAllowed({"admin"})
+    public Node persistEr(@PathParam("module") String module,
+                          CommitRequest commitRequest) {
+        var token = userInfo.getString(claimToken);
+        var name = userInfo.getString(claimName);
+        var email = userInfo.getEmail();
+
+        var committer = Author.newBuilder()
+                .setName(name)
+                .setEmail(email)
+                .build();
+        var branch = getBranch();
+        var accessInfo = new AccessInfoRecord(token, branch);
+        return service.persistEr(module, commitRequest, committer, accessInfo);
+    }
+
     private String getBranch() {
         var branch = uriInfo.getQueryParameters().getFirst("_branch");
         return branch == null ? defaultBranch : branch;

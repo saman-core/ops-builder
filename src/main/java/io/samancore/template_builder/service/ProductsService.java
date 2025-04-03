@@ -31,4 +31,8 @@ public interface ProductsService {
     Node getWorkflowJson(String module, String product, AccessInfoRecord accessInfoRecord);
 
     Node persistWorkflow(String module, String product, CommitRequest commitRequest, Author author, AccessInfoRecord accessInfoRecord);
+
+    Node getErJson(String module, AccessInfoRecord accessInfoRecord);
+
+    Node persistEr(String module, CommitRequest commitRequest, Author author, AccessInfoRecord accessInfoRecord);
 }
