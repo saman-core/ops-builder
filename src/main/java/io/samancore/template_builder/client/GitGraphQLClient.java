@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface GitGraphQLClient {
 
-    List<NodeDetail> listModulesDetails(List<String> moduleNames, AccessInfoRecord accessInfoRecord);
+    List<NodeDetail> listFoldersDetails(String baseFolder, List<String> subFoldersNames, AccessInfoRecord accessInfoRecord);
 }

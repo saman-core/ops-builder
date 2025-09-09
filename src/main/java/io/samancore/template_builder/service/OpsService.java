@@ -4,7 +4,7 @@ import io.samancore.template_builder.model.*;
 
 import java.util.List;
 
-public interface ProductsService {
+public interface OpsService {
 
     Node createModule(String module, CommitRequest commitRequest, Author author, AccessInfoRecord accessInfoRecord);
 
@@ -14,7 +14,7 @@ public interface ProductsService {
 
     Node createProduct(String module, String product, CommitRequest commitRequest, Author author, AccessInfoRecord accessInfoRecord);
 
-    List<Node> listProducts(String module, AccessInfoRecord accessInfoRecord);
+    List<NodeDetail> listProducts(String module, AccessInfoRecord accessInfoRecord);
 
     Node getProduct(String module, String product, AccessInfoRecord accessInfoRecord);
 

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.io.IOException;
 
 @ApplicationScoped
@@ -32,11 +33,11 @@ public class GithubGraphQLClient implements GitGraphQLClient {
     String gitOwner;
 
     @Override
-    public List<NodeDetail> listModulesDetails(List<String> moduleNames, AccessInfoRecord accessInfoRecord) {
+    public List<NodeDetail> listFoldersDetails(String baseFolder, List<String> subFoldersNames, AccessInfoRecord accessInfoRecord) {
         String branch = accessInfoRecord.branch();
-        log.infof("Generating GraphQL query for branch '%s' and modules: %s", branch, moduleNames);
+        log.infof("Generating GraphQL query for branch '%s', baseFolder: '%s' and subFolders: %s", branch, baseFolder, subFoldersNames);
         Map<String, Object> queryBody = new HashMap<>();
-        queryBody.put("query", generateQuery(branch, moduleNames));
+        queryBody.put("query", generateQuery(branch, subFoldersNames, baseFolder));
         Map<String, Object> response;
         try {
             response = api.executeGraphQLQuery(queryBody, accessInfoRecord.token());
@@ -54,7 +55,7 @@ public class GithubGraphQLClient implements GitGraphQLClient {
             return new ArrayList<>();
         }
         Map<String, Object> repoData = (Map<String, Object>) data.get("repo");
-        return generateResponse(moduleNames, repoData);
+        return generateResponse(subFoldersNames, repoData);
     }
 
     private Map<String, Object> toObjectMap(String obj) {
@@ -66,52 +67,54 @@ public class GithubGraphQLClient implements GitGraphQLClient {
         }
     }
 
-    private String generateQuery(String branch, List<String> moduleNames) {
-        log.infof("Building GraphQL query for branch '%s' and modules: %s", branch, moduleNames);
+    private String generateQuery(String branch, List<String> subFoldersNames, String baseFolder) {
+        log.infof("Building GraphQL query for branch '%s', baseFolder: '%s' and subFolders: %s", branch, baseFolder, subFoldersNames);
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("query {");
         queryBuilder.append("repo: repository(owner: \"").append(gitOwner).append("\", name: \"").append(gitRepo).append("\") {");
-        for (String module : moduleNames) {
-            queryBuilder.append(module).append(": object(expression: \"")
-                    .append(branch).append(":").append(module).append("/properties.json\") { ...on Blob { text } }");
+        for (String subFolder : subFoldersNames) {
+            String prefix = (baseFolder != null && !baseFolder.isEmpty()) ? baseFolder + "/" : "";
 
-            queryBuilder.append(module).append("History: ref(qualifiedName: \"")
-                    .append(branch).append("\") { target { ... on Commit { history(first: 1, path: \"")
-                    .append(module).append("\") { edges { node { committedDate } } } } } }");
+            queryBuilder.append(subFolder).append(": object(expression: \"")
+                .append(branch).append(":").append(prefix).append(subFolder).append("/properties.json\") { ...on Blob { text } }");
+
+            queryBuilder.append(subFolder).append("History: ref(qualifiedName: \"")
+                .append(branch).append("\") { target { ... on Commit { history(first: 1, path: \"")
+                .append(prefix).append(subFolder).append("\") { edges { node { committedDate } } } } } }");
         }
         queryBuilder.append("}}\n");
         return queryBuilder.toString();
     }
 
-    private List<NodeDetail> generateResponse(List<String> moduleNames, Map<String, Object> repoData) {
+    private List<NodeDetail> generateResponse(List<String> subFoldersNames, Map<String, Object> repoData) {
         List<NodeDetail> result = new ArrayList<>();
-        for (String module : moduleNames) {
-            Map<String, Object> propertiesJson = extractPropertiesJson(repoData, module);
-            String lastModified = extractLastModified(repoData, module);
+        for (String subFolder : subFoldersNames) {
+            Map<String, Object> propertiesJson = extractPropertiesJson(repoData, subFolder);
+            String lastModified = extractLastModified(repoData, subFolder);
             if (propertiesJson == null) {
-                log.warnf("No properties.json found for module '%s'", module);
+                log.warnf("No properties.json found for subFolder '%s'", subFolder);
             }
             if (lastModified == null) {
-                log.warnf("No last modified date found for module '%s'", module);
+                log.warnf("No last modified date found for subFolder '%s'", subFolder);
             }
-            result.add(new NodeDetail(module, propertiesJson, lastModified));
+            result.add(new NodeDetail(subFolder, propertiesJson, lastModified));
         }
         return result;
     }
 
-    private Map<String, Object> extractPropertiesJson(Map<String, Object> repoData, String module) {
-        if (repoData.get(module) instanceof Map<?, ?> blobObj) {
+    private Map<String, Object> extractPropertiesJson(Map<String, Object> repoData, String subFolder) {
+        if (repoData.get(subFolder) instanceof Map<?, ?> blobObj) {
             try {
                 return toObjectMap((String) blobObj.get("text"));
             } catch (Exception e) {
-                log.errorf(e, "Error parsing properties.json for module '%s'", module);
+                log.errorf(e, "Error parsing properties.json for subFolder '%s'", subFolder);
             }
         }
-        return null;
+        return Collections.emptyMap();
     }
 
-    private String extractLastModified(Map<String, Object> repoData, String module) {
-        if (repoData.get(module + "History") instanceof Map<?, ?> historyObj) {
+    private String extractLastModified(Map<String, Object> repoData, String subFolder) {
+        if (repoData.get(subFolder + "History") instanceof Map<?, ?> historyObj) {
             Map<String, Object> target = (Map<String, Object>) historyObj.get("target");
             if (target != null && target.get("history") instanceof Map<?, ?> hist) {
                 List<Map<String, Object>> edges = (List<Map<String, Object>>) hist.get("edges");

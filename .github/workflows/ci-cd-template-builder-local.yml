@@ -1,12 +1,12 @@
-name: CI-CD-TEMPLATE-BUILDER-LOCAL
+name: CI-CD-OPS-BUILDER-LOCAL
 on:
   workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
   ACTOR: saman-core
-  IMAGE_APP_NAME: template-builder
-  APP_NAME: template-builder
+  IMAGE_APP_NAME: ops-builder
+  APP_NAME: ops-builder
   N_REPLICA: 1
 
 jobs:

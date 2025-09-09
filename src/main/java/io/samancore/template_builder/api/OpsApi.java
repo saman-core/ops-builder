@@ -2,7 +2,7 @@ package io.samancore.template_builder.api;
 
 import io.quarkus.oidc.UserInfo;
 import io.samancore.template_builder.model.*;
-import io.samancore.template_builder.service.ProductsService;
+import io.samancore.template_builder.service.OpsService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -13,9 +13,9 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.List;
 
-@Path("/products/")
+@Path("/")
 @Produces(MediaType.APPLICATION_JSON)
-public class ProductsApi {
+public class OpsApi {
     @ConfigProperty(name = "oidc.claim.name")
     String claimName;
     @ConfigProperty(name = "oidc.claim.token")
@@ -24,7 +24,7 @@ public class ProductsApi {
     String defaultBranch;
 
     @Inject
-    ProductsService service;
+    OpsService service;
 
     @Inject
     UserInfo userInfo;
@@ -45,7 +45,7 @@ public class ProductsApi {
     @GET
     @Path("{module}")
     @RolesAllowed({"admin"})
-    public List<Node> getAllProducts(@PathParam("module") String module) {
+    public List<NodeDetail> getAllProducts(@PathParam("module") String module) {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
         var accessInfo = new AccessInfoRecord(token, branch);

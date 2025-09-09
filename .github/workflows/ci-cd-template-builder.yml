@@ -1,12 +1,12 @@
-name: CI-CD-TEMPLATE-BUILDER
+name: CI-CD-OPS-BUILDER
 on:
   workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
   ACTOR: saman-core
-  IMAGE_APP_NAME: template-builder
-  APP_NAME: template-builder
+  IMAGE_APP_NAME: ops-builder
+  APP_NAME: ops-builder
   EKS_CLUSTER_NAME: my-cluster
   AWS_REGION: us-east-1
   N_REPLICA: 1

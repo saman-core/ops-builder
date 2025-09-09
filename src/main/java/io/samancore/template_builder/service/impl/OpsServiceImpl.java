@@ -3,7 +3,7 @@ package io.samancore.template_builder.service.impl;
 import io.samancore.template_builder.client.GitGraphQLClient;
 import io.samancore.template_builder.client.GitReposClient;
 import io.samancore.template_builder.model.*;
-import io.samancore.template_builder.service.ProductsService;
+import io.samancore.template_builder.service.OpsService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -12,7 +12,7 @@ import java.util.List;
 import static io.samancore.template_builder.GitConstants.*;
 
 @ApplicationScoped
-public class ProductsServiceImpl implements ProductsService {
+public class OpsServiceImpl implements OpsService {
     private static final String PRODUCTS_SLASH = PRODUCTS.concat(SLASH);
 
     @Inject
@@ -38,7 +38,7 @@ public class ProductsServiceImpl implements ProductsService {
     @Override
     public List<NodeDetail> listModules(AccessInfoRecord accessInfoRecord) {
         var modules = clientRepos.listDirectories("", accessInfoRecord);
-        return clientGraphQL.listModulesDetails(modules.stream().map(Node::getName).toList(), accessInfoRecord);
+        return clientGraphQL.listFoldersDetails("", modules.stream().map(Node::getName).toList(), accessInfoRecord);
     }
 
     @Override
@@ -62,9 +62,11 @@ public class ProductsServiceImpl implements ProductsService {
     }
 
     @Override
-    public List<Node> listProducts(String module,
-                                   AccessInfoRecord accessInfoRecord) {
-        return clientRepos.listDirectories(module.concat(SLASH).concat(PRODUCTS), accessInfoRecord);
+    public List<NodeDetail> listProducts(String module,
+                                         AccessInfoRecord accessInfoRecord) {
+        var base = module.concat(SLASH).concat(PRODUCTS);
+        var products = clientRepos.listDirectories(base, accessInfoRecord);
+        return clientGraphQL.listFoldersDetails(base, products.stream().map(Node::getName).toList(), accessInfoRecord);
     }
 
     @Override
