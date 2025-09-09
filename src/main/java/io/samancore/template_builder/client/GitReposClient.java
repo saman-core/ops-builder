@@ -8,7 +8,7 @@ import io.samancore.template_builder.model.Node;
 import java.util.List;
 import java.util.Map;
 
-public interface GitClient {
+public interface GitReposClient {
 
     List<Node> listDirectories(String directory, AccessInfoRecord accessInfoRecord);
 
@@ -19,4 +19,10 @@ public interface GitClient {
     Node deleteFile(String file, String message, String sha, Author author, AccessInfoRecord accessInfoRecord);
 
     Map<String, ConditionsProperty> getMapConditionsTemplate(String path, AccessInfoRecord accessInfoRecord);
+
+    String getCommitSha(String branch, AccessInfoRecord accessInfoRecord);
+
+    Node persistFiles(List<Node> files, String message, String commitSha, Author author, AccessInfoRecord accessInfoRecord);
+
+    Node deleteDirectory(String directory, String message, Author author, AccessInfoRecord accessInfoRecord);
 }

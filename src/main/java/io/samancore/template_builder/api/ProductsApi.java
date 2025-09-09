@@ -35,7 +35,7 @@ public class ProductsApi {
     @GET
     @Path("")
     @RolesAllowed({"admin"})
-    public List<Node> getAllModules() {
+    public List<NodeDetail> getAllModules() {
         var token = userInfo.getString(claimToken);
         var branch = getBranch();
         var accessInfo = new AccessInfoRecord(token, branch);

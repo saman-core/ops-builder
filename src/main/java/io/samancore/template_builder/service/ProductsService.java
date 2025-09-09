@@ -6,17 +6,29 @@ import java.util.List;
 
 public interface ProductsService {
 
-    List<Node> listModules(AccessInfoRecord accessInfoRecord);
+    Node createModule(String module, CommitRequest commitRequest, Author author, AccessInfoRecord accessInfoRecord);
+
+    List<NodeDetail> listModules(AccessInfoRecord accessInfoRecord);
+
+    Node deleteModule(String module, String message, Author author, AccessInfoRecord accessInfoRecord);
+
+    Node createProduct(String module, String product, CommitRequest commitRequest, Author author, AccessInfoRecord accessInfoRecord);
 
     List<Node> listProducts(String module, AccessInfoRecord accessInfoRecord);
 
     Node getProduct(String module, String product, AccessInfoRecord accessInfoRecord);
+
+    Node deleteProduct(String module, String product, String message, Author author, AccessInfoRecord accessInfoRecord);
+
+    Node createTemplate(String module, String product, String template, CommitRequest commitRequest, Author author, AccessInfoRecord accessInfoRecord);
 
     List<Node> listTemplates(String module, String product, AccessInfoRecord accessInfoRecord);
 
     Node getTemplateJson(String module, String product, String template, AccessInfoRecord accessInfoRecord);
 
     Node persistTemplate(String module, String product, String template, CommitRequest commitRequest, Author author, AccessInfoRecord accessInfoRecord);
+
+    Node deleteTemplate(String module, String product, String template, String message, Author author, AccessInfoRecord accessInfoRecord);
 
     ConditionsProperty getConditionsProperty(String module, String product, String template, String property, AccessInfoRecord accessInfoRecord);
 
