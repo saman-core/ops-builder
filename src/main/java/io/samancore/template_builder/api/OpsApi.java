@@ -13,7 +13,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.List;
 
-@Path("/")
+@Path("/ops/")
 @Produces(MediaType.APPLICATION_JSON)
 public class OpsApi {
     @ConfigProperty(name = "oidc.claim.name")
